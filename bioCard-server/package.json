@@ -1,0 +1,29 @@
+{
+  "name": "biocard-server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec \"node --loader ts-node/esm\" --env-file=.env main.ts",
+    "test": "echo \"Error: no test specified\" && exit "
+  },
+  "dependencies": {
+    "@fastify/jwt": "^9.1.0",
+    "@fastify/postgres": "^6.0.2",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.0",
+    "fastify": "^5.4.0",
+    "pg": "^8.16.3",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^24.0.13",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
