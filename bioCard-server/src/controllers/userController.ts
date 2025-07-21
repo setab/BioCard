@@ -79,15 +79,30 @@ export async function signinUser(req: FastifyRequest, res: FastifyReply) {
 }
 
 export async function getUserById(
-  req: FastifyRequest<{ Params: { name: string } }>,
+  req: FastifyRequest<{ Params: { id: string } }>,
   res: FastifyReply
 ) {
-  const { name } = req.params;
+  const { id } = req.params;
   const client = await req.server.db.connect();
   try {
-    const result = await client.query("SELECT * FROM users WHERE name = $1", [
-      name,
-    ]);
+    // const result = await client.query("SELECT * FROM users WHERE id = $1", [
+    //   id,
+    // ]);
+    const result = await client.query(
+      `SELECT
+    u.*,
+    p.nfc_uid,
+    p.blood_type,
+    p.allergies,
+    p.last_visit,
+    d.department,
+    d.license_number
+    FROM users u
+    LEFT JOIN patients p ON u.id = p.user_id
+    LEFT JOIN doctors d ON u.id = d.user_id
+    WHERE u.id = $1`,
+      [id]
+    );
     if (result.rows.length === 0) {
       return res.status(404).send({ error: "User not found" });
     }

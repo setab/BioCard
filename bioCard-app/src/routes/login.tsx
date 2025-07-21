@@ -66,7 +66,7 @@ function RouteComponent() {
         // Your code to execute after 100ms
         navigate({
           from: Route.fullPath,
-          to: "/admin/dashboard",
+          to: `/${data.role}/dashboard`,
         });
       }, 100);
     },

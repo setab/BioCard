@@ -21,8 +21,8 @@ async function userRoute(fastify: FastifyInstance, opts: FastifyPluginOptions) {
   );
   fastify.post("/api/login", loginUser);
   fastify.post("/api/signin", signinUser);
-  fastify.get<{ Params: { name: string } }>(
-    "/api/user/:name",
+  fastify.get<{ Params: { id: string } }>(
+    "/api/user/:id",
     {
       schema: createUserSchema,
     },
