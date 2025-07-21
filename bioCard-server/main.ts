@@ -4,6 +4,7 @@ import dbPlugin from "./src/plugins/db.js";
 import jwtPlugin from "./src/plugins/jwt.js";
 import { logRequest } from "./src/hooks/onRequest.js";
 import { env, isDevelopment } from "./src/config/env.js";
+import cors from "@fastify/cors";
 const fastify = Fastify({
   logger: isDevelopment,
 });
@@ -12,6 +13,9 @@ const fastify = Fastify({
 fastify.register(jwtPlugin);
 fastify.register(dbPlugin);
 fastify.register(userRoute);
+fastify.register(cors, {
+  origin: true,
+});
 fastify.addHook("onRequest", logRequest);
 
 fastify.get("/", function (request, reply) {

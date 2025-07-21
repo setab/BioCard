@@ -1,9 +1,18 @@
 import { Suspense } from "react";
-import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
+import {
+  Outlet,
+  Link,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { IsAuthContext } from "@/components/AuthProvider";
 
-export const Route = createRootRoute({
+interface RootRouterContext {
+  auth: IsAuthContext;
+}
+
+export const Route = createRootRouteWithContext<RootRouterContext>()({
   component: () => (
     <>
       <Outlet />

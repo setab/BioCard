@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-// import { LoginForm } from "@/components/login-form";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -8,19 +7,20 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { apiClient } from "@/lib/api";
+// import { apiClient } from "@/lib/api";
 import { env } from "@/lib/env";
+import { useAuth } from "@/hooks/useAuth";
 
 const LogInFormSchema = z.object({
   email: z.email(),
-  password: z.string().min(8),
+  password: z.string().min(4),
 });
 type FormField = z.infer<typeof LogInFormSchema>;
 export const Route = createFileRoute("/login")({
@@ -28,6 +28,9 @@ export const Route = createFileRoute("/login")({
 });
 
 function RouteComponent() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof LogInFormSchema>>({
     resolver: zodResolver(LogInFormSchema),
     defaultValues: {
@@ -36,19 +39,43 @@ function RouteComponent() {
     },
   });
 
-  // const { data, isPending } = useQuery({
-  //   queryKey: ["test"],
-  //   queryFn: async () => {
-  //     await new Promise((res) => setTimeout(res, 1000));
-  //     console.log("test query");
-  //     return JSON.stringify({ name: "setab" });
-  //   },
-  // });
+  const LogInMutation = useMutation({
+    mutationFn: async (params: FormField) => {
+      console.log(params);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(params),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      console.log(`data: ${data}; data.data: ${JSON.stringify(data)}`);
+      auth.login(data);
+      setTimeout(() => {
+        // Your code to execute after 100ms
+        navigate({
+          from: Route.fullPath,
+          to: "/admin/dashboard",
+        });
+      }, 100);
+    },
+  });
+
   const onSubmit: SubmitHandler<FormField> = async (data) => {
     try {
-      const result = await apiClient.login(data.email, data.password);
+      const result = await LogInMutation.mutateAsync(data);
       console.log("Login successful:", result);
-      // Handle successful login (e.g., redirect, store token, etc.)
     } catch (error) {
       console.error("Login error:", error);
       form.setError("email", {

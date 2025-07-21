@@ -10,6 +10,7 @@ import {
   loginUser,
   signinUser,
   getUserById,
+  addAdminUser,
 } from "../controllers/userController.js";
 
 async function userRoute(fastify: FastifyInstance, opts: FastifyPluginOptions) {
@@ -27,6 +28,7 @@ async function userRoute(fastify: FastifyInstance, opts: FastifyPluginOptions) {
     },
     getUserById
   );
+  fastify.post("/api/admin", addAdminUser);
 }
 
 export default userRoute;
