@@ -1,9 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useState } from "react";
-import { useCookies } from "react-cookie";
 
-const auth_token = import.meta.env.VITE_AUTH_TOKEN_COOKIE_KEY;
+// const auth_token = import.meta.env.VITE_AUTH_TOKEN_COOKIE_KEY;
 interface IsUser {
-  uid: string;
+  uuid: string;
   email: string;
   name: string;
   role: string;
@@ -19,62 +19,72 @@ export interface IsAuthContext {
   logout: () => void;
   updateUser: (IsUser: Partial<IsUser>) => void;
   user: IsUser | null;
-  // token: string | null;
+  isLoading: boolean;
 }
 
 export const AuthContext = createContext<IsAuthContext | null>(null);
 
-const key = import.meta.env.VITE_LOCALSTORAGE_KEY;
-
-function getStoredUser() {
-  const item = localStorage.getItem(key);
-  if (item !== null) {
-    return JSON.parse(item) as IsUser;
-  } else {
-    return null;
-  }
-}
-
-function setStoreUser(user: IsUser | null) {
-  if (user) {
-    localStorage.setItem(key, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(key);
-  }
-}
-
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [authCookie, setAuthCookie, removeCookie] = useCookies([auth_token]);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    !!authCookie.session_token
-  );
-  const [user, setUser] = useState<IsUser | null>(getStoredUser());
+  const [user, setUser] = useState<IsUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const login = useCallback(({ session_token, ...user }: IsLoginParam) => {
+  const { isLoading } = useQuery({
+    queryKey: ["use_info"],
+    queryFn: async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/getProfile`,
+          { credentials: "include" }
+        );
+        if (!res.ok) {
+          setUser(null);
+          setIsAuthenticated(false);
+          return null;
+        }
+        const data = await res.json();
+        setUser(data);
+        setIsAuthenticated(true);
+        return data;
+      } catch (e) {
+        setUser(null);
+        setIsAuthenticated(false);
+        return null;
+      }
+    },
+  });
+
+  const login = useCallback((user: IsUser) => {
     console.log(`Storing User Info: ${JSON.stringify(user)}`);
-    setAuthCookie(auth_token, session_token);
-    setStoreUser({ ...user });
-    setUser({ ...user });
+    setUser(user);
     setIsAuthenticated(true);
   }, []);
 
-  const logout = useCallback(() => {
-    removeCookie(auth_token);
-    setStoreUser(null);
+  const logout = useCallback(async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.log(err);
+    }
     setUser(null);
     setIsAuthenticated(false);
     console.log("Logout SuccessFull");
   }, []);
 
-  const updateUser = useCallback((newUser: Partial<IsUser>) => {
-    const updatedUser = { ...user, ...newUser } as IsUser;
-    setStoreUser(updatedUser);
-    setUser(updatedUser);
-  }, []);
+  const updateUser = useCallback(
+    (newUser: Partial<IsUser>) => {
+      if (!user) return;
+      const updatedUser = { ...user, ...newUser } as IsUser;
+      setUser(updatedUser);
+    },
+    [user]
+  );
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, updateUser, user }}
+      value={{ isAuthenticated, login, logout, updateUser, user, isLoading }}
     >
       {children}
     </AuthContext.Provider>

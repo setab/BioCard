@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PatientPrescriptionsRouteImport } from './routes/patient/prescriptions'
+import { Route as PatientHealthRecordsRouteImport } from './routes/patient/healthRecords'
 import { Route as PatientDashboardRouteImport } from './routes/patient/dashboard'
+import { Route as PatientAppoinmentsRouteImport } from './routes/patient/appoinments'
 import { Route as PatientIdRouteImport } from './routes/patient/$id'
 import { Route as DoctorDashboardRouteImport } from './routes/doctor/dashboard'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
@@ -32,9 +35,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatientPrescriptionsRoute = PatientPrescriptionsRouteImport.update({
+  id: '/patient/prescriptions',
+  path: '/patient/prescriptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientHealthRecordsRoute = PatientHealthRecordsRouteImport.update({
+  id: '/patient/healthRecords',
+  path: '/patient/healthRecords',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PatientDashboardRoute = PatientDashboardRouteImport.update({
   id: '/patient/dashboard',
   path: '/patient/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientAppoinmentsRoute = PatientAppoinmentsRouteImport.update({
+  id: '/patient/appoinments',
+  path: '/patient/appoinments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PatientIdRoute = PatientIdRouteImport.update({
@@ -60,7 +78,10 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/patient/$id': typeof PatientIdRoute
+  '/patient/appoinments': typeof PatientAppoinmentsRoute
   '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/healthRecords': typeof PatientHealthRecordsRoute
+  '/patient/prescriptions': typeof PatientPrescriptionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +90,10 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/patient/$id': typeof PatientIdRoute
+  '/patient/appoinments': typeof PatientAppoinmentsRoute
   '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/healthRecords': typeof PatientHealthRecordsRoute
+  '/patient/prescriptions': typeof PatientPrescriptionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,7 +103,10 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/patient/$id': typeof PatientIdRoute
+  '/patient/appoinments': typeof PatientAppoinmentsRoute
   '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/healthRecords': typeof PatientHealthRecordsRoute
+  '/patient/prescriptions': typeof PatientPrescriptionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,7 +117,10 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/doctor/dashboard'
     | '/patient/$id'
+    | '/patient/appoinments'
     | '/patient/dashboard'
+    | '/patient/healthRecords'
+    | '/patient/prescriptions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,7 +129,10 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/doctor/dashboard'
     | '/patient/$id'
+    | '/patient/appoinments'
     | '/patient/dashboard'
+    | '/patient/healthRecords'
+    | '/patient/prescriptions'
   id:
     | '__root__'
     | '/'
@@ -108,7 +141,10 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/doctor/dashboard'
     | '/patient/$id'
+    | '/patient/appoinments'
     | '/patient/dashboard'
+    | '/patient/healthRecords'
+    | '/patient/prescriptions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,7 +154,10 @@ export interface RootRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
   DoctorDashboardRoute: typeof DoctorDashboardRoute
   PatientIdRoute: typeof PatientIdRoute
+  PatientAppoinmentsRoute: typeof PatientAppoinmentsRoute
   PatientDashboardRoute: typeof PatientDashboardRoute
+  PatientHealthRecordsRoute: typeof PatientHealthRecordsRoute
+  PatientPrescriptionsRoute: typeof PatientPrescriptionsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -144,11 +183,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patient/prescriptions': {
+      id: '/patient/prescriptions'
+      path: '/patient/prescriptions'
+      fullPath: '/patient/prescriptions'
+      preLoaderRoute: typeof PatientPrescriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/healthRecords': {
+      id: '/patient/healthRecords'
+      path: '/patient/healthRecords'
+      fullPath: '/patient/healthRecords'
+      preLoaderRoute: typeof PatientHealthRecordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/patient/dashboard': {
       id: '/patient/dashboard'
       path: '/patient/dashboard'
       fullPath: '/patient/dashboard'
       preLoaderRoute: typeof PatientDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/appoinments': {
+      id: '/patient/appoinments'
+      path: '/patient/appoinments'
+      fullPath: '/patient/appoinments'
+      preLoaderRoute: typeof PatientAppoinmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/patient/$id': {
@@ -182,7 +242,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
   DoctorDashboardRoute: DoctorDashboardRoute,
   PatientIdRoute: PatientIdRoute,
+  PatientAppoinmentsRoute: PatientAppoinmentsRoute,
   PatientDashboardRoute: PatientDashboardRoute,
+  PatientHealthRecordsRoute: PatientHealthRecordsRoute,
+  PatientPrescriptionsRoute: PatientPrescriptionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -46,6 +46,7 @@ function RouteComponent() {
         `${import.meta.env.VITE_API_BASE_URL}/api/login`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -64,6 +65,7 @@ function RouteComponent() {
       auth.login(data);
       setTimeout(() => {
         // Your code to execute after 100ms
+        console.log(`going to ${data.role}/dashboard`);
         navigate({
           from: Route.fullPath,
           to: `/${data.role}/dashboard`,

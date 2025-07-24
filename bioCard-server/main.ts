@@ -10,14 +10,16 @@ const fastify = Fastify({
   logger: isDevelopment,
 });
 
-//register
+// Register CORS first
+fastify.register(cors, {
+  origin: "http://localhost:5173",
+  credentials: true,
+});
+// Then register other plugins
 fastify.register(fastifyCookie);
 fastify.register(jwtPlugin);
 fastify.register(dbPlugin);
 fastify.register(userRoute);
-fastify.register(cors, {
-  origin: true,
-});
 fastify.addHook("onRequest", logRequest);
 
 fastify.get("/", function (request, reply) {
