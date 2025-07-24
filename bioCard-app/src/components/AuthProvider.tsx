@@ -1,12 +1,7 @@
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useState,
-  useEffect,
-} from "react";
-import { Skeleton } from "./ui/skeleton";
+import { createContext, type ReactNode, useCallback, useState } from "react";
+import { useCookies } from "react-cookie";
 
+const auth_token = import.meta.env.VITE_AUTH_TOKEN_COOKIE_KEY;
 interface IsUser {
   uid: string;
   email: string;
@@ -22,75 +17,64 @@ export interface IsAuthContext {
   isAuthenticated: boolean;
   login: (IsLoginParam: IsLoginParam) => void;
   logout: () => void;
+  updateUser: (IsUser: Partial<IsUser>) => void;
   user: IsUser | null;
-  token: string | null;
+  // token: string | null;
 }
 
 export const AuthContext = createContext<IsAuthContext | null>(null);
 
 const key = import.meta.env.VITE_LOCALSTORAGE_KEY;
 
-export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<IsUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+function getStoredUser() {
+  const item = localStorage.getItem(key);
+  if (item !== null) {
+    return JSON.parse(item) as IsUser;
+  } else {
+    return null;
+  }
+}
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(key);
-    console.log(`mounted: ${JSON.stringify(stored)}`);
-    if (stored) {
-      const { user, token } = JSON.parse(stored);
-      console.log(`useEffect stored: ${JSON.stringify(user)} and ${token}`);
-      setUser(user);
-      setToken(token);
-      setIsAuthenticated(!!token);
-    }
-    setLoading(false);
-  }, []);
+function setStoreUser(user: IsUser | null) {
+  if (user) {
+    localStorage.setItem(key, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(key);
+  }
+}
+
+export default function AuthProvider({ children }: { children: ReactNode }) {
+  const [authCookie, setAuthCookie, removeCookie] = useCookies([auth_token]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    !!authCookie.session_token
+  );
+  const [user, setUser] = useState<IsUser | null>(getStoredUser());
 
   const login = useCallback(({ session_token, ...user }: IsLoginParam) => {
     console.log(`Storing User Info: ${JSON.stringify(user)}`);
-    setUser({
-      uid: user.uid,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    });
-    setToken(session_token);
+    setAuthCookie(auth_token, session_token);
+    setStoreUser({ ...user });
+    setUser({ ...user });
     setIsAuthenticated(true);
-    localStorage.setItem(
-      key,
-      JSON.stringify({
-        user: {
-          uid: user.uid,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        },
-        token: session_token,
-      })
-    );
   }, []);
+
   const logout = useCallback(() => {
+    removeCookie(auth_token);
+    setStoreUser(null);
     setUser(null);
-    setToken(null);
     setIsAuthenticated(false);
-    localStorage.setItem(key, "");
     console.log("Logout SuccessFull");
   }, []);
 
-  if (loading)
-    return (
-      <>
-        <Skeleton />
-      </>
-    );
+  const updateUser = useCallback((newUser: Partial<IsUser>) => {
+    const updatedUser = { ...user, ...newUser } as IsUser;
+    setStoreUser(updatedUser);
+    setUser(updatedUser);
+  }, []);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, user, token }}
+      value={{ isAuthenticated, login, logout, updateUser, user }}
     >
       {children}
     </AuthContext.Provider>

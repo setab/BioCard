@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply, FastifyRegister } from "fastify";
+import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from "bcrypt";
 
 export async function getAllUsers(req: FastifyRequest, res: FastifyReply) {
@@ -27,24 +27,53 @@ export async function loginUser(req: FastifyRequest, res: FastifyReply) {
     }
 
     const token = req.server.jwt.sign(
-      { uid: user.id, name: user.name, role: user.role, email: user.email },
+      { uuid: user.id, name: user.name, role: user.role, email: user.email },
       {
         expiresIn: "5m",
       }
     );
+    res.setCookie("session_token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 5,
+    });
 
     res.send({
-      uid: user.id,
+      uuid: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
-      session_token: token,
     });
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal server Error" });
   } finally {
     client.release();
+  }
+}
+
+export async function logoutUser(req: FastifyRequest, res: FastifyReply) {
+  res.clearCookie("session_token", { path: "/" });
+  res.send({ message: "Logout Successful", success: true }).status(200);
+}
+
+export async function getProfile(req: FastifyRequest, res: FastifyReply) {
+  try {
+    if (!req.user) {
+      return res.status(401).send({ error: "Not authenticated" });
+    }
+    const { uuid, name, email, role } = req.user as {
+      uuid: string;
+      name: string;
+      email: string;
+      role: string;
+    };
+    res.send({ uuid, name, email, role });
+  } catch (err) {
+    req.server.log.error(err);
+    res.status(500).send({ error: "Internal Server error" });
   }
 }
 
@@ -82,6 +111,7 @@ export async function getUserById(
   req: FastifyRequest<{ Params: { id: string } }>,
   res: FastifyReply
 ) {
+  console.log(req.user);
   const { id } = req.params;
   const client = await req.server.db.connect();
   try {

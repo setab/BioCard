@@ -9,6 +9,10 @@ export default fp(async (fastify, opts) => {
   }
   await fastify.register(fastifyJwt, {
     secret: jwtSecret,
+    cookie: {
+      cookieName: "session_token",
+      signed: false,
+    },
   });
 
   fastify.decorate(

@@ -5,11 +5,13 @@ import jwtPlugin from "./src/plugins/jwt.js";
 import { logRequest } from "./src/hooks/onRequest.js";
 import { env, isDevelopment } from "./src/config/env.js";
 import cors from "@fastify/cors";
+import fastifyCookie from "@fastify/cookie";
 const fastify = Fastify({
   logger: isDevelopment,
 });
 
 //register
+fastify.register(fastifyCookie);
 fastify.register(jwtPlugin);
 fastify.register(dbPlugin);
 fastify.register(userRoute);
