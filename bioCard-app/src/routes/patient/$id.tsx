@@ -5,25 +5,31 @@ const allowedRoles = ["admin", "doctor"];
 
 export const Route = createFileRoute("/patient/$id")({
   beforeLoad: async ({ location, params }) => {
+    console.log("Patient id route");
     const user = await fetchSessionUser();
+
+    // Allow admin or doctor to view any patient
     if (user && allowedRoles.includes(user.role)) {
       return;
     }
-    if (!user || user.role !== "patient" || user.uuid !== params.id) {
-      console.log(
-        JSON.stringify(
-          `user: ${JSON.stringify(user)}; params: ${JSON.stringify(params)}; location: ${JSON.stringify(location)}`
-        )
-      );
-      throw redirect({
-        to: `/patient/dashboard`,
-        search: {
-          redirect: location.href,
-          unauthorized: params.id,
-        },
-      });
+
+    // Allow patient to view only their own details
+    if (user && user.role === "patient" && user.uuid === params.id) {
+      return;
     }
-    return;
+
+    // Otherwise, redirect
+    console.log(
+      JSON.stringify(
+        `patient/$id : user: ${JSON.stringify(user)}; params: ${JSON.stringify(params)}; location: ${JSON.stringify(location)}`
+      )
+    );
+    throw redirect({
+      to: `/patient/dashboard`,
+      search: {
+        unauthorized: params.id,
+      },
+    });
   },
   component: RouteComponent,
 });

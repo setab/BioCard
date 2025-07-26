@@ -6,7 +6,10 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link as RouterLink } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "./ui/button";
+import { LogOut } from "lucide-react";
 // import type { userType } from "@/types/user";
 
 type NavLink = { label: string; to: string; params?: Record<string, string> };
@@ -17,6 +20,7 @@ interface AppDrawerProps {
 
 export default function AppDrawer({ navLinks }: AppDrawerProps) {
   const [open, setOpen] = React.useState(false);
+  const auth = useAuth();
 
   const toggleDrawer = (state: boolean) => () => setOpen(state);
 
@@ -35,7 +39,7 @@ export default function AppDrawer({ navLinks }: AppDrawerProps) {
         <List sx={{ width: 250 }}>
           {navLinks.map((link) => (
             <ListItem key={link.to} disablePadding>
-              <RouterLink
+              <Link
                 to={link.to}
                 {...(link.params ? { params: link.params } : {})}
                 style={{
@@ -47,9 +51,23 @@ export default function AppDrawer({ navLinks }: AppDrawerProps) {
                 <ListItemButton onClick={toggleDrawer(true)}>
                   <ListItemText primary={link.label} />
                 </ListItemButton>
-              </RouterLink>
+              </Link>
             </ListItem>
           ))}
+          <ListItem key={"logout"}>
+            <Link
+              to={"/login"}
+              onClick={() => {
+                auth.logout();
+                setOpen(false);
+              }}
+            >
+              <Button onClick={toggleDrawer(true)}>
+                <LogOut size={18} />
+                <ListItemText primary={"Logout"} />
+              </Button>
+            </Link>
+          </ListItem>
         </List>
       </Drawer>
     </>
