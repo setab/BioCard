@@ -1,11 +1,20 @@
 import { fetchSessionUser } from "@/hooks/authApi";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect, useParams } from "@tanstack/react-router";
+const allowedRoles = ["admin", "doctor"];
 
 export const Route = createFileRoute("/patient/$id")({
   beforeLoad: async ({ location, params }) => {
     const user = await fetchSessionUser();
+    if (user && allowedRoles.includes(user.role)) {
+      return;
+    }
     if (!user || user.role !== "patient" || user.uuid !== params.id) {
+      console.log(
+        JSON.stringify(
+          `user: ${JSON.stringify(user)}; params: ${JSON.stringify(params)}; location: ${JSON.stringify(location)}`
+        )
+      );
       throw redirect({
         to: `/patient/dashboard`,
         search: {
@@ -14,6 +23,7 @@ export const Route = createFileRoute("/patient/$id")({
         },
       });
     }
+    return;
   },
   component: RouteComponent,
 });

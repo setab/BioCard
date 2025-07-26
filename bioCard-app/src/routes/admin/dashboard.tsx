@@ -11,17 +11,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { LogOut } from "lucide-react";
+import { fetchSessionUser } from "@/hooks/authApi";
 
 export const Route = createFileRoute("/admin/dashboard")({
-  beforeLoad: ({ context, location }) => {
-    if (!context.auth.isAuthenticated || context.auth.user?.role !== "admin") {
+  beforeLoad: async ({ location }) => {
+    const user = await fetchSessionUser();
+    if (!user || user.role !== "admin") {
       throw redirect({
         to: "/login",
-        search: {
-          redirect: location.href,
-        },
+        search: { redirect: location.href },
       });
     }
+    return { user };
   },
   component: RouteComponent,
 });
@@ -31,16 +32,8 @@ function RouteComponent() {
   const { data, isFetching, isError, error } = useQuery({
     queryKey: ["allusers"],
     queryFn: async () => {
-      const token = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY)
-        ? JSON.parse(
-            localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY)!
-          ).token
-        : null;
-
       return await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/alluser`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
       }).then((res) => {
         if (!res.ok) throw new Error("Failed to fetch Users");
         return res.json();
@@ -86,6 +79,9 @@ function RouteComponent() {
                 <TableHead className="text-left text-gray-700 font-semibold">
                   Role
                 </TableHead>
+                <TableHead className="text-left text-gray-700 font-semibold">
+                  {" "}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -107,12 +103,19 @@ function RouteComponent() {
                       <span
                         className={`inline-block px-2 py-1 rounded text-xs font-medium ${
                           user.role === "admin"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
+                            ? "bg-red-100 text-red-800"
+                            : user.role === "doctor"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
                         }`}
                       >
                         {user.role}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      <Link to="/patient/$id" params={{ id: user.id }}>
+                        view
+                      </Link>
                     </TableCell>
                   </TableRow>
                 ))

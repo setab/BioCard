@@ -111,7 +111,7 @@ function RouteComponent() {
               </Button>
             </Link>
           </div>
-
+          {/* 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <DashboardCard
               icon={<Calendar className="text-black" size={28} />}
@@ -137,7 +137,7 @@ function RouteComponent() {
               description="Full Details of Paitient"
               to={`/patient/${auth.user?.uuid}`}
             />
-          </div>
+          </div> */}
 
           <div>
             {isLoading && (
