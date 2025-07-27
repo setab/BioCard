@@ -8,7 +8,10 @@ const envSchema = z.object({
 
   // Server
   PORT: z.string().transform(Number).pipe(z.number().int().positive()),
-  HOST: z.string().default("localhost"),
+  HOST: z.string().min(1, "Host is required").default("localhost"),
+  PGDATABASE: z.string().min(1, "PGDATABASE is required"),
+  PGUSER: z.string().min(1, "PGUSER is required"),
+  PGPASSWORD: z.string().min(1, "PGPASSWORD is required"),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),

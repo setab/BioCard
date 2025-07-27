@@ -6,31 +6,31 @@ import { logRequest } from "./src/hooks/onRequest.js";
 import { env, isDevelopment } from "./src/config/env.js";
 import cors from "@fastify/cors";
 import fastifyCookie from "@fastify/cookie";
-const fastify = Fastify({
+const app = Fastify({
   logger: isDevelopment,
 });
 
 // Register CORS first
-fastify.register(cors, {
+app.register(cors, {
   origin: "http://localhost:5173",
   credentials: true,
 });
 // Then register other plugins
-fastify.register(fastifyCookie);
-fastify.register(jwtPlugin);
-fastify.register(dbPlugin);
-fastify.register(userRoute);
-fastify.addHook("onRequest", logRequest);
+app.register(fastifyCookie);
+app.register(jwtPlugin);
+app.register(dbPlugin);
+app.register(userRoute);
+app.addHook("onRequest", logRequest);
 
-fastify.get("/", function (request, reply) {
+app.get("/", function (request, reply) {
   reply.send({ hello: "world" });
 });
 
-fastify.get(
+app.get(
   "/test",
-  // {
-  //   onRequest: [logRequest],
-  // },
+  {
+    onRequest: [logRequest],
+  },
   function (req, res) {
     res.send({ message: "this is test file " });
   }
@@ -38,14 +38,14 @@ fastify.get(
 
 const start = async () => {
   try {
-    await fastify.listen({
+    await app.listen({
       port: env.PORT,
       host: env.HOST,
     });
     console.log(`🚀 Server is listening at http://${env.HOST}:${env.PORT}`);
     console.log(`📝 Environment: ${env.NODE_ENV}`);
   } catch (err) {
-    fastify.log.error(err);
+    app.log.error(err);
     process.exit(1);
   }
 };
@@ -55,6 +55,6 @@ start();
 // Graceful shutdown on Ctrl+C
 process.on("SIGINT", async () => {
   console.log("SIGINT received, shutting down...");
-  await fastify.close();
+  await app.close();
   process.exit(0);
 });

@@ -1,36 +1,36 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from "bcrypt";
 
+// Use req.server.sql for all queries!
+
 export async function getAllUsers(req: FastifyRequest, res: FastifyReply) {
-  const client = await req.server.db.connect();
   try {
-    const { rows } = await client.query("SELECT id,name,email,role FROM users");
-    res.send(rows);
-  } finally {
-    client.release();
+    const users = await req.server.sql`
+      SELECT id, name, email, role FROM users
+    `;
+    res.send(users);
+  } catch (err) {
+    req.server.log.error(err);
+    res.status(500).send({ error: "Internal Server error" });
   }
 }
 
 export async function loginUser(req: FastifyRequest, res: FastifyReply) {
   const { email, password } = req.body as { email: string; password: string };
-  const client = await req.server.db.connect();
 
   try {
-    const result = await client.query(
-      "SELECT id, email, password, name, role FROM users where email = $1",
-      [email]
-    );
-    const user = result.rows[0];
+    const result = await req.server.sql`
+      SELECT id, email, password, name, role FROM users WHERE email = ${email}
+    `;
+    const user = result[0];
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send({ error: "Invalied credentials" });
+      return res.status(401).send({ error: "Invalid credentials" });
     }
 
     const token = req.server.jwt.sign(
       { uuid: user.id, name: user.name, role: user.role, email: user.email },
-      {
-        expiresIn: "5m",
-      }
+      { expiresIn: "5m" }
     );
     res.setCookie("session_token", token, {
       httpOnly: true,
@@ -49,14 +49,12 @@ export async function loginUser(req: FastifyRequest, res: FastifyReply) {
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal server Error" });
-  } finally {
-    client.release();
   }
 }
 
 export async function logoutUser(req: FastifyRequest, res: FastifyReply) {
   res.clearCookie("session_token", { path: "/" });
-  res.send({ message: "Logout Successful", success: true }).status(200);
+  res.status(200).send({ message: "Logout Successful", success: true });
 }
 
 export async function getProfile(req: FastifyRequest, res: FastifyReply) {
@@ -83,27 +81,23 @@ export async function signinUser(req: FastifyRequest, res: FastifyReply) {
     email: string;
     password: string;
   };
-  const client = await req.server.db.connect();
   try {
-    const exist = await client.query(
-      "SELECT name, email FROM users WHERE name = $1 OR email = $2",
-      [name, email]
-    );
-    if (exist.rows.length > 0) {
+    const exist = await req.server.sql`
+      SELECT name, email FROM users WHERE name = ${name} OR email = ${email}
+    `;
+    if (exist.length > 0) {
       return res.status(409).send({ error: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await client.query(
-      "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, 'patient')",
-      [name, email, hashedPassword]
-    );
+    await req.server.sql`
+      INSERT INTO users (name, email, password, role)
+      VALUES (${name}, ${email}, ${hashedPassword}, 'patient')
+    `;
     res.code(201).send({ success: true });
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal Server Error" });
-  } finally {
-    client.release();
   }
 }
 
@@ -113,35 +107,28 @@ export async function getUserById(
 ) {
   console.log(req.user);
   const { id } = req.params;
-  const client = await req.server.db.connect();
   try {
-    // const result = await client.query("SELECT * FROM users WHERE id = $1", [
-    //   id,
-    // ]);
-    const result = await client.query(
-      `SELECT
-    u.*,
-    p.nfc_uid,
-    p.blood_type,
-    p.allergies,
-    p.last_visit,
-    d.department,
-    d.license_number
-    FROM users u
-    LEFT JOIN patients p ON u.id = p.user_id
-    LEFT JOIN doctors d ON u.id = d.user_id
-    WHERE u.id = $1`,
-      [id]
-    );
-    if (result.rows.length === 0) {
+    const result = await req.server.sql`
+      SELECT
+        u.*,
+        p.nfc_uid,
+        p.blood_type,
+        p.allergies,
+        p.last_visit,
+        d.department,
+        d.license_number
+      FROM users u
+      LEFT JOIN patients p ON u.id = p.user_id
+      LEFT JOIN doctors d ON u.id = d.user_id
+      WHERE u.id = ${id}
+    `;
+    if (result.length === 0) {
       return res.status(404).send({ error: "User not found" });
     }
-    res.send(result.rows[0]);
+    res.send(result[0]);
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal server error" });
-  } finally {
-    client.release();
   }
 }
 
@@ -151,26 +138,22 @@ export async function addAdminUser(req: FastifyRequest, res: FastifyReply) {
     email: string;
     password: string;
   };
-  const client = await req.server.db.connect();
   try {
-    const exist = await client.query(
-      "SELECT name, email FROM users WHERE name = $1 OR email = $2",
-      [name, email]
-    );
-    if (exist.rows.length > 0) {
+    const exist = await req.server.sql`
+      SELECT name, email FROM users WHERE name = ${name} OR email = ${email}
+    `;
+    if (exist.length > 0) {
       return res.status(409).send({ error: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await client.query(
-      "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, 'admin')",
-      [name, email, hashedPassword]
-    );
+    await req.server.sql`
+      INSERT INTO users (name, email, password, role)
+      VALUES (${name}, ${email}, ${hashedPassword}, 'admin')
+    `;
     res.code(201).send({ success: true });
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal Server Error" });
-  } finally {
-    client.release();
   }
 }
