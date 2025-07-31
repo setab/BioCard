@@ -1,3 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+
 export type Appointment = {
   id: string;
   patient_id: string;
@@ -7,6 +13,9 @@ export type Appointment = {
   status?: string;
   notes?: string;
   created_at?: string;
+  department: string;
+  license_number: string;
+  doctor_name: string;
 };
 
 export type AppointmentsCardProps = {
@@ -14,6 +23,41 @@ export type AppointmentsCardProps = {
 };
 
 export default function AppointmentsCard({ userId }: { userId: string }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["Appointments", userId],
+    queryFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/getPatientAppointments/${userId}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch");
+      }
+      return res.json();
+    },
+    enabled: !!userId,
+  });
+
+  if (isLoading)
+    return (
+      <Card sx={{ minWidth: 320, boxShadow: 3, borderRadius: 2, p: 2 }}>
+        <CardContent sx={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress />
+        </CardContent>
+      </Card>
+    );
+  if (error || !data)
+    return (
+      <Card sx={{ minWidth: 320, boxShadow: 3, borderRadius: 2, p: 2 }}>
+        <CardContent>
+          <Typography color="error" align="center">
+            Error loading Upcoming Appointments
+          </Typography>
+        </CardContent>
+      </Card>
+    );
   return (
     <div
       style={{
@@ -26,11 +70,11 @@ export default function AppointmentsCard({ userId }: { userId: string }) {
       }}
     >
       <h2 style={{ marginBottom: "16px" }}>Upcoming Appointments</h2>
-      {appointments.length === 0 ? (
+      {data.length === 0 ? (
         <div>No upcoming appointments.</div>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
-          {appointments.map((appt) => (
+          {data.map((appt: Appointment) => (
             <li
               key={appt.id}
               style={{
@@ -40,13 +84,16 @@ export default function AppointmentsCard({ userId }: { userId: string }) {
               }}
             >
               <div>
-                <strong>{appt.patient}</strong>
+                <strong>{appt.doctor_name}</strong>
               </div>
               <div>
-                {appt.date} at {appt.time}
+                {new Date(appt.appointment_time).toLocaleString(undefined, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
               </div>
-              {appt.description && (
-                <div style={{ color: "#666" }}>{appt.description}</div>
+              {appt.reason && (
+                <div style={{ color: "#666" }}>{appt.reason}</div>
               )}
             </li>
           ))}

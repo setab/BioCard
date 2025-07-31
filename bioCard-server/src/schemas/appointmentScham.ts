@@ -20,6 +20,9 @@ export const getPatientAppointmentsByIdSchema = {
           status: { type: "string" },
           notes: { type: "string", nullable: true },
           created_at: { type: "string", format: "date-time" },
+          department: { type: "string", nullable: true },
+          license_number: { type: "string", nullable: true },
+          doctor_name: { type: "string" }, // doctor's name from users table
         },
         required: [
           "id",
@@ -28,6 +31,9 @@ export const getPatientAppointmentsByIdSchema = {
           "appointment_time",
           "status",
           "created_at",
+          "department",
+          "license_number",
+          "doctor_name",
         ],
       },
     },
