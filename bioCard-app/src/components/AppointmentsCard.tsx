@@ -1,18 +1,19 @@
-type Appointment = {
+export type Appointment = {
   id: string;
-  date: string;
-  time: string;
-  patient: string;
-  description?: string;
+  patient_id: string;
+  doctor_id: string;
+  appointment_time: string;
+  reason?: string;
+  status?: string;
+  notes?: string;
+  created_at?: string;
 };
 
-type AppointmentsCardProps = {
+export type AppointmentsCardProps = {
   appointments: Appointment[];
 };
 
-export default function AppointmentsCard({
-  appointments,
-}: AppointmentsCardProps) {
+export default function AppointmentsCard({ userId }: { userId: string }) {
   return (
     <div
       style={{
