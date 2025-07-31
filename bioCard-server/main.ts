@@ -6,9 +6,11 @@ import { logRequest } from "./src/hooks/onRequest.js";
 import { env, isDevelopment } from "./src/config/env.js";
 import cors from "@fastify/cors";
 import fastifyCookie from "@fastify/cookie";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
+
 const app = Fastify({
   logger: isDevelopment,
-});
+}).withTypeProvider<ZodTypeProvider>();
 
 // Register CORS first
 app.register(cors, {
@@ -31,8 +33,11 @@ app.get(
   {
     onRequest: [logRequest],
   },
-  function (req, res) {
-    res.send({ message: "this is test file " });
+  async function (req, res) {
+    const result = await req.server.sql`
+      select * from users
+    `;
+    res.send({ message: "this is test file ", result });
   }
 );
 

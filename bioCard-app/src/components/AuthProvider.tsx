@@ -42,6 +42,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           return null;
         }
         const data = await res.json();
+        console.log(`getProfile Data: ${JSON.stringify(data)}`);
         setUser(data);
         setIsAuthenticated(true);
         return data;

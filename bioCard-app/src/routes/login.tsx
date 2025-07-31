@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 // import { apiClient } from "@/lib/api";
 import { env } from "@/lib/env";
 import { useAuth } from "@/hooks/useAuth";
+import { GoogleLogin } from "@react-oauth/google";
 
 const LogInFormSchema = z.object({
   email: z.email(),
@@ -71,6 +72,37 @@ function RouteComponent() {
           to: `/${data.role}/dashboard`,
         });
       }, 100);
+    },
+  });
+
+  const googleSigninMutation = useMutation({
+    mutationFn: async (params: { id_token: string }) => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/google`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(params),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Google Sign-in failed");
+      }
+      console.log(`response: ${JSON.stringify(response.ok)}`);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      auth.login(data);
+      setTimeout(() => {
+        navigate({
+          from: Route.fullPath,
+          to: `/patient/dashboard`,
+        });
+      }, 100);
+    },
+    onError: (error) => {
+      alert(error.message || "Google Sign-in failed");
     },
   });
 
@@ -153,6 +185,26 @@ function RouteComponent() {
               </Button>
             </form>
           </Form>
+          <div className="mt-5 text-center">
+            <span>Or</span>
+          </div>
+          <div className="mt-6">
+            <GoogleLogin
+              width={336}
+              size="medium"
+              onSuccess={(credentialResponse) => {
+                console.log(JSON.stringify(credentialResponse));
+                if (credentialResponse.credential) {
+                  googleSigninMutation.mutate({
+                    id_token: credentialResponse.credential,
+                  });
+                }
+              }}
+              onError={() => {
+                alert("Google Sign-in failed");
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

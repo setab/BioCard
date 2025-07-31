@@ -68,6 +68,7 @@ export async function getProfile(req: FastifyRequest, res: FastifyReply) {
       email: string;
       role: string;
     };
+    console.log(`role: ${role}, uuid: ${uuid}, name: ${name}, email: ${email}`);
     res.send({ uuid, name, email, role });
   } catch (err) {
     req.server.log.error(err);

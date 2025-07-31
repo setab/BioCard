@@ -48,7 +48,7 @@ export default function AppDrawer({ navLinks }: AppDrawerProps) {
                   width: "100%",
                 }}
               >
-                <ListItemButton onClick={toggleDrawer(true)}>
+                <ListItemButton onClick={toggleDrawer(false)}>
                   <ListItemText primary={link.label} />
                 </ListItemButton>
               </Link>

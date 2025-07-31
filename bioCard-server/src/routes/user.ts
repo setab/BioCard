@@ -14,6 +14,7 @@ import {
   logoutUser,
   getProfile,
 } from "../controllers/userController.js";
+import { GoogleSignInController } from "../controllers/google.js";
 
 async function userRoute(fastify: FastifyInstance, opts: FastifyPluginOptions) {
   //gets
@@ -42,6 +43,7 @@ async function userRoute(fastify: FastifyInstance, opts: FastifyPluginOptions) {
   fastify.post("/api/login", loginUser);
   fastify.post("/api/signin", signinUser);
   fastify.post("/api/admin", addAdminUser);
+  fastify.post("/api/google", GoogleSignInController);
 }
 
 export default userRoute;
