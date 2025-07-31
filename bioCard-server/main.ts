@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import userRoute from "./src/routes/user.js";
+import patientRoute from "./src/routes/patient.js";
 import dbPlugin from "./src/plugins/db.js";
 import jwtPlugin from "./src/plugins/jwt.js";
 import { logRequest } from "./src/hooks/onRequest.js";
@@ -22,6 +23,7 @@ app.register(fastifyCookie);
 app.register(jwtPlugin);
 app.register(dbPlugin);
 app.register(userRoute);
+app.register(patientRoute);
 app.addHook("onRequest", logRequest);
 
 app.get("/", function (request, reply) {
