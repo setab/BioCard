@@ -16,10 +16,7 @@ import { Route as DoctorRouteRouteImport } from './routes/doctor/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PatientIndexRouteImport } from './routes/patient/index'
 import { Route as DoctorIndexRouteImport } from './routes/doctor/index'
-import { Route as PatientPrescriptionsRouteImport } from './routes/patient/prescriptions'
-import { Route as PatientHealthRecordsRouteImport } from './routes/patient/healthRecords'
 import { Route as PatientDashboardRouteImport } from './routes/patient/dashboard'
-import { Route as PatientAppointmentsRouteImport } from './routes/patient/appointments'
 import { Route as PatientIdRouteImport } from './routes/patient/$id'
 import { Route as DoctorPaitentsRouteImport } from './routes/doctor/paitents'
 import { Route as DoctorDashboardRouteImport } from './routes/doctor/dashboard'
@@ -60,24 +57,9 @@ const DoctorIndexRoute = DoctorIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DoctorRouteRoute,
 } as any)
-const PatientPrescriptionsRoute = PatientPrescriptionsRouteImport.update({
-  id: '/prescriptions',
-  path: '/prescriptions',
-  getParentRoute: () => PatientRouteRoute,
-} as any)
-const PatientHealthRecordsRoute = PatientHealthRecordsRouteImport.update({
-  id: '/healthRecords',
-  path: '/healthRecords',
-  getParentRoute: () => PatientRouteRoute,
-} as any)
 const PatientDashboardRoute = PatientDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => PatientRouteRoute,
-} as any)
-const PatientAppointmentsRoute = PatientAppointmentsRouteImport.update({
-  id: '/appointments',
-  path: '/appointments',
   getParentRoute: () => PatientRouteRoute,
 } as any)
 const PatientIdRoute = PatientIdRouteImport.update({
@@ -111,10 +93,7 @@ export interface FileRoutesByFullPath {
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/doctor/paitents': typeof DoctorPaitentsRoute
   '/patient/$id': typeof PatientIdRoute
-  '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/dashboard': typeof PatientDashboardRoute
-  '/patient/healthRecords': typeof PatientHealthRecordsRoute
-  '/patient/prescriptions': typeof PatientPrescriptionsRoute
   '/doctor/': typeof DoctorIndexRoute
   '/patient/': typeof PatientIndexRoute
 }
@@ -126,10 +105,7 @@ export interface FileRoutesByTo {
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/doctor/paitents': typeof DoctorPaitentsRoute
   '/patient/$id': typeof PatientIdRoute
-  '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/dashboard': typeof PatientDashboardRoute
-  '/patient/healthRecords': typeof PatientHealthRecordsRoute
-  '/patient/prescriptions': typeof PatientPrescriptionsRoute
   '/doctor': typeof DoctorIndexRoute
   '/patient': typeof PatientIndexRoute
 }
@@ -144,10 +120,7 @@ export interface FileRoutesById {
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/doctor/paitents': typeof DoctorPaitentsRoute
   '/patient/$id': typeof PatientIdRoute
-  '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/dashboard': typeof PatientDashboardRoute
-  '/patient/healthRecords': typeof PatientHealthRecordsRoute
-  '/patient/prescriptions': typeof PatientPrescriptionsRoute
   '/doctor/': typeof DoctorIndexRoute
   '/patient/': typeof PatientIndexRoute
 }
@@ -163,10 +136,7 @@ export interface FileRouteTypes {
     | '/doctor/dashboard'
     | '/doctor/paitents'
     | '/patient/$id'
-    | '/patient/appointments'
     | '/patient/dashboard'
-    | '/patient/healthRecords'
-    | '/patient/prescriptions'
     | '/doctor/'
     | '/patient/'
   fileRoutesByTo: FileRoutesByTo
@@ -178,10 +148,7 @@ export interface FileRouteTypes {
     | '/doctor/dashboard'
     | '/doctor/paitents'
     | '/patient/$id'
-    | '/patient/appointments'
     | '/patient/dashboard'
-    | '/patient/healthRecords'
-    | '/patient/prescriptions'
     | '/doctor'
     | '/patient'
   id:
@@ -195,10 +162,7 @@ export interface FileRouteTypes {
     | '/doctor/dashboard'
     | '/doctor/paitents'
     | '/patient/$id'
-    | '/patient/appointments'
     | '/patient/dashboard'
-    | '/patient/healthRecords'
-    | '/patient/prescriptions'
     | '/doctor/'
     | '/patient/'
   fileRoutesById: FileRoutesById
@@ -263,32 +227,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DoctorIndexRouteImport
       parentRoute: typeof DoctorRouteRoute
     }
-    '/patient/prescriptions': {
-      id: '/patient/prescriptions'
-      path: '/prescriptions'
-      fullPath: '/patient/prescriptions'
-      preLoaderRoute: typeof PatientPrescriptionsRouteImport
-      parentRoute: typeof PatientRouteRoute
-    }
-    '/patient/healthRecords': {
-      id: '/patient/healthRecords'
-      path: '/healthRecords'
-      fullPath: '/patient/healthRecords'
-      preLoaderRoute: typeof PatientHealthRecordsRouteImport
-      parentRoute: typeof PatientRouteRoute
-    }
     '/patient/dashboard': {
       id: '/patient/dashboard'
       path: '/dashboard'
       fullPath: '/patient/dashboard'
       preLoaderRoute: typeof PatientDashboardRouteImport
-      parentRoute: typeof PatientRouteRoute
-    }
-    '/patient/appointments': {
-      id: '/patient/appointments'
-      path: '/appointments'
-      fullPath: '/patient/appointments'
-      preLoaderRoute: typeof PatientAppointmentsRouteImport
       parentRoute: typeof PatientRouteRoute
     }
     '/patient/$id': {
@@ -340,19 +283,13 @@ const DoctorRouteRouteWithChildren = DoctorRouteRoute._addFileChildren(
 
 interface PatientRouteRouteChildren {
   PatientIdRoute: typeof PatientIdRoute
-  PatientAppointmentsRoute: typeof PatientAppointmentsRoute
   PatientDashboardRoute: typeof PatientDashboardRoute
-  PatientHealthRecordsRoute: typeof PatientHealthRecordsRoute
-  PatientPrescriptionsRoute: typeof PatientPrescriptionsRoute
   PatientIndexRoute: typeof PatientIndexRoute
 }
 
 const PatientRouteRouteChildren: PatientRouteRouteChildren = {
   PatientIdRoute: PatientIdRoute,
-  PatientAppointmentsRoute: PatientAppointmentsRoute,
   PatientDashboardRoute: PatientDashboardRoute,
-  PatientHealthRecordsRoute: PatientHealthRecordsRoute,
-  PatientPrescriptionsRoute: PatientPrescriptionsRoute,
   PatientIndexRoute: PatientIndexRoute,
 }
 

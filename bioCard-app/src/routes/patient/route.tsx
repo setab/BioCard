@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { fetchSessionUser } from "@/hooks/authApi";
-import AppDrawer from "@/components/AppDrawer";
-import { useAuth } from "@/hooks/useAuth";
+// import AppDrawer from "@/components/AppDrawer";
+// import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/patient")({
   beforeLoad: async ({ location }) => {
@@ -20,10 +20,10 @@ export const Route = createFileRoute("/patient")({
 });
 
 function RouteComponent() {
-  const auth = useAuth();
+  // const auth = useAuth();
   return (
     <>
-      <AppDrawer
+      {/* <AppDrawer
         navLinks={[
           { label: "Dashboard", to: "/patient/dashboard" },
           { label: "Appointments", to: "/patient/appointments" },
@@ -35,7 +35,7 @@ function RouteComponent() {
             params: { id: auth.user?.uuid || "" },
           },
         ]}
-      />
+      /> */}
       <Outlet />
     </>
   );

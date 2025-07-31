@@ -3,16 +3,44 @@ import {
   useSearch,
   useNavigate,
 } from "@tanstack/react-router";
-import { User } from "lucide-react";
+// import { User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-// import { useQuery } from "@tanstack/react-query";
-// import DashboardCard from "@/components/DashBoardCard";
 import { useState } from "react";
+import type { userType } from "@/types/user";
+import {
+  // User,
+  Calendar,
+  Phone,
+  MapPin,
+  Droplet,
+  AlertCircle,
+  FileText,
+} from "lucide-react";
+import { PersonalInfoCard } from "@/components/PersonalInfoCard";
 
 export type searchProp = {
   redirect?: string;
   unauthorized?: string;
 };
+
+function TopBar({ user }: { user: userType }) {
+  return (
+    <div className="bg-primary text-primary-foreground flex justify-between items-center px-8 py-4 shadow">
+      <div className="flex items-center gap-2">
+        <span className="font-bold text-xl">MediCard</span>
+        <span className="ml-6 text-base">My Records</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <span>
+          Welcome, {user?.name} ({user?.role})
+        </span>
+        <button className="flex items-center gap-1 hover:underline">
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/patient/dashboard")({
   component: RouteComponent,
@@ -25,23 +53,22 @@ function RouteComponent() {
   const [showUnauthorized, setShowUnauthorized] = useState(
     !!search.unauthorized
   );
-  // console.log("search: " + JSON.stringify(search));
+  // Example data, replace with real data
+  const appointments = [
+    {
+      doctor: "Dr. Sarah Johnson",
+      reason: "Regular Checkup",
+      time: "10:00 AM",
+      date: "2/15/2024",
+    },
+    {
+      doctor: "Dr. Michael Brown",
+      reason: "Follow-up",
+      time: "2:30 PM",
+      date: "2/22/2024",
+    },
+  ];
 
-  // const { data, isLoading, error } = useQuery({
-  //   queryKey: ["user", auth.user?.uuid],
-  //   queryFn: async () => {
-  //     return await fetch(
-  //       `${import.meta.env.VITE_API_BASE_URL}/api/user/${auth.user?.uuid}`,
-  //       {
-  //         credentials: "include",
-  //       }
-  //     ).then((res) => {
-  //       if (!res.ok) throw new Error("Failed to fetch Users");
-  //       return res.json();
-  //     });
-  //   },
-  //   enabled: !!auth.user?.uuid,
-  // });
   const handleCloseUnauthorized = () => {
     setShowUnauthorized(false);
     navigate({
@@ -70,42 +97,69 @@ function RouteComponent() {
           </div>
         )}
       </div>
-      <div className="min-h-screen mt-10">
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 border border-black">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <User className="text-black" size={32} />
-              <div>
-                <h1 className="text-3xl font-bold text-black">
-                  Patient Dashboard
-                </h1>
-                <p className="text-gray-700 text-sm">
-                  Welcome, {auth.user?.name || "Patient"}
-                </p>
-              </div>
+      <div className="bg-background min-h-screen">
+        {auth.user && <TopBar user={auth.user} />}
+
+        <div className="max-w-6xl mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Personal Info Card */}
+          <PersonalInfoCard userId={auth.user?.uuid ?? ""} />
+          {/* <div className="bg-card rounded-lg shadow p-6 flex flex-col gap-4">
+            <h2 className="font-bold text-lg mb-2">Personal Information</h2>
+            <div className="flex items-center gap-2">
+              <Calendar className="text-primary" size={18} />
+              <span>Date of Birth</span>
+              <span className="font-bold ml-auto">11/5/1992</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="text-primary" size={18} />
+              <span>Phone</span>
+              <span className="ml-auto">+1-555-0789</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="text-primary" size={18} />
+              <span>Address</span>
+              <span className="ml-auto">789 Pine St, City, State 12345</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Droplet className="text-destructive" size={18} />
+              <span>Blood Type</span>
+              <span className="ml-auto font-bold">B+</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="text-warning" size={18} />
+              <span>Allergies</span>
+              <span className="ml-auto">No known allergies</span>
+            </div>
+          </div> */}
+
+          {/* Medical Records Card */}
+          <div className="bg-card rounded-lg shadow p-6 flex flex-col gap-4 col-span-1 md:col-span-2">
+            <h2 className="font-bold text-lg mb-2 flex items-center gap-2">
+              <FileText className="text-primary" size={20} />
+              My Medical Records
+            </h2>
+            <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+              <FileText size={32} />
+              <span>No medical records available.</span>
             </div>
           </div>
 
-          <div>
-            {auth.user && (
-              <div className="bg-gray-100 p-6 rounded-lg shadow-inner border border-black">
-                <div className="font-semibold text-black mb-4 text-lg">
-                  Your Profile
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-black text-sm">
-                  <div>
-                    <span className="font-medium">Name:</span> {auth.user.name}
-                  </div>
-                  <div>
-                    <span className="font-medium">Email:</span>{" "}
-                    {auth.user.email}
-                  </div>
-                  <div>
-                    <span className="font-medium">Role:</span> {auth.user.role}
-                  </div>
+          {/* Appointments Card */}
+          <div className="bg-card rounded-lg shadow p-6 flex flex-col gap-4 mt-8 md:mt-0">
+            <h2 className="font-bold text-lg mb-2">Upcoming Appointments</h2>
+            {appointments.map((appt, idx) => (
+              <div key={idx} className="border rounded p-3 mb-2 flex flex-col">
+                <span className="font-semibold">{appt.doctor}</span>
+                <span className="text-sm text-muted-foreground">
+                  {appt.reason}
+                </span>
+                <div className="flex items-center gap-2 mt-1">
+                  <Calendar className="text-primary" size={16} />
+                  <span>{appt.date}</span>
+                  <span className="ml-auto">{appt.time}</span>
                 </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
       </div>
