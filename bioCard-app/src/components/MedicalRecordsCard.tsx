@@ -2,10 +2,17 @@ import React from "react";
 
 type MedicalRecord = {
   id: string;
+  patient_id: string;
+  doctor_id: string;
   date: string;
   doctor: string;
   diagnosis: string;
   notes?: string;
+  prescriptions?: string;
+  procedures?: string;
+  follow_up?: string;
+  images?: string[];
+  created_at: string;
 };
 
 type MedicalRecordsCardProps = {

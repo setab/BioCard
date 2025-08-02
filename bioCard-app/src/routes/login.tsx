@@ -120,7 +120,7 @@ function RouteComponent() {
   return (
     <div className="min-h-screen flex">
       {/* Left side */}
-      <div className="hidden md:flex flex-col justify-between w-1/2 bg-gray-200 p-8">
+      <div className="hidden md:flex flex-col justify-between w-1/2 bg-gray-800 p-8">
         {/* Logo at the top */}
         <div>
           {/* Replace with your logo */}
@@ -128,8 +128,10 @@ function RouteComponent() {
         </div>
         {/* Text at the bottom */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold">Welcome to {env.VITE_APP_NAME}</h2>
-          <p className="text-gray-700 mt-2">
+          <h2 className="text-2xl font-bold text-gray-50">
+            Welcome to {env.VITE_APP_NAME}
+          </h2>
+          <p className="text-gray-400 mt-2">
             Your digital identity, simplified. Manage your bio cards with ease.
           </p>
         </div>

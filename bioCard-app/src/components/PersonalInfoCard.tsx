@@ -4,8 +4,11 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import { Calendar, Phone, MapPin, Droplet, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export type UserInfoProps = {
   id: string;
@@ -21,6 +24,8 @@ export type UserInfoProps = {
   department: string | null;
   license_number: string | null;
   address?: string | null;
+  date_of_birth?: string | null;
+  phone?: string | null;
 };
 
 export function PersonalInfoCard({ userId }: { userId: string }) {
@@ -29,17 +34,15 @@ export function PersonalInfoCard({ userId }: { userId: string }) {
     queryFn: async () => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/user/${userId}`,
-        {
-          credentials: "include",
-        }
+        { credentials: "include" }
       );
-      if (!res.ok) {
-        throw new Error("Failed to fetch");
-      }
+      if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     },
     enabled: !!userId,
   });
+
+  const [expanded, setExpanded] = useState(false);
 
   if (isLoading)
     return (
@@ -61,22 +64,72 @@ export function PersonalInfoCard({ userId }: { userId: string }) {
     );
 
   return (
-    <Card sx={{ minWidth: 320, boxShadow: 3, borderRadius: 2, p: 2 }}>
+    <Card
+      sx={{
+        minWidth: 320,
+        boxShadow: 3,
+        borderRadius: 2,
+        p: 2,
+        transition: "transform 0.2s, box-shadow 0.2s",
+        cursor: "pointer",
+        ...(!expanded && {
+          "&:hover": {
+            boxShadow: 6,
+            transform: "scale(1.03)",
+          },
+        }),
+        ...(expanded && {
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 1300,
+          borderRadius: 0,
+          boxShadow: 12,
+          background: "#fff",
+          overflowY: "auto",
+          p: { xs: 1, md: 6 },
+          cursor: "default",
+        }),
+      }}
+      onClick={() => !expanded && setExpanded(true)}
+    >
       <CardContent>
-        <Typography variant="h6" fontWeight={700} gutterBottom>
-          Personal Information
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h6" fontWeight={700} gutterBottom>
+            Personal Information
+          </Typography>
+          {expanded && (
+            <IconButton
+              aria-label="close"
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(false);
+              }}
+              sx={{ ml: 2 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          )}
+        </Box>
         <Divider sx={{ mb: 2 }} />
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* Always show these fields */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Calendar size={18} style={{ color: "#2563eb" }} />
             <Typography variant="body2" fontWeight={500}>
               Date of Birth
             </Typography>
             <Typography variant="body2" fontWeight={700} sx={{ ml: "auto" }}>
-              {/* Replace with actual DOB if available */}
-              {data.created_at
-                ? new Date(data.created_at).toLocaleDateString()
+              {data.date_of_birth
+                ? new Date(data.date_of_birth).toLocaleDateString()
                 : "N/A"}
             </Typography>
           </Box>
@@ -86,8 +139,7 @@ export function PersonalInfoCard({ userId }: { userId: string }) {
               Phone
             </Typography>
             <Typography variant="body2" sx={{ ml: "auto" }}>
-              {/* Replace with actual phone if available */}
-              +1-555-0789
+              {data.phone ? data.phone : "N/A"}
             </Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -123,7 +175,58 @@ export function PersonalInfoCard({ userId }: { userId: string }) {
                 : "No known allergies"}
             </Typography>
           </Box>
+          {/* Show full info only when expanded */}
+          {expanded && (
+            <>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="body2" fontWeight={500}>
+                Name: <span style={{ fontWeight: 700 }}>{data.name}</span>
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                Email: <span style={{ fontWeight: 700 }}>{data.email}</span>
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                Role: <span style={{ fontWeight: 700 }}>{data.role}</span>
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                NFC UID: <span style={{ fontWeight: 700 }}>{data.nfc_uid}</span>
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                Last Visit:{" "}
+                <span style={{ fontWeight: 700 }}>
+                  {data.last_visit
+                    ? new Date(data.last_visit).toLocaleDateString()
+                    : "N/A"}
+                </span>
+              </Typography>
+              <Typography variant="body2" fontWeight={500}>
+                Created:{" "}
+                <span style={{ fontWeight: 700 }}>
+                  {data.created_at
+                    ? new Date(data.created_at).toLocaleDateString()
+                    : "N/A"}
+                </span>
+              </Typography>
+              {data.department && (
+                <Typography variant="body2" fontWeight={500}>
+                  Department:{" "}
+                  <span style={{ fontWeight: 700 }}>{data.department}</span>
+                </Typography>
+              )}
+              {data.license_number && (
+                <Typography variant="body2" fontWeight={500}>
+                  License #:{" "}
+                  <span style={{ fontWeight: 700 }}>{data.license_number}</span>
+                </Typography>
+              )}
+            </>
+          )}
         </Box>
+        {!expanded && (
+          <Typography align="center" color="primary" sx={{ mt: 5 }}>
+            Click to show all appointments
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
