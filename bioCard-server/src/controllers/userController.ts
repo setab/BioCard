@@ -30,14 +30,14 @@ export async function loginUser(req: FastifyRequest, res: FastifyReply) {
 
     const token = req.server.jwt.sign(
       { uuid: user.id, name: user.name, role: user.role, email: user.email },
-      { expiresIn: "5m" }
+      { expiresIn: "60m" }
     );
     res.setCookie("session_token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 5,
+      maxAge: 60 * 60,
     });
 
     res.send({

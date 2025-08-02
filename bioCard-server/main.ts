@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import userRoute from "./src/routes/user.js";
-import patientRoute from "./src/routes/patient.js";
+import patientRoute from "./src/routes/appointment.js";
+import medicalRecordRoute from "./src/routes/medicalRecord.js";
 import dbPlugin from "./src/plugins/db.js";
 import jwtPlugin from "./src/plugins/jwt.js";
 import { logRequest } from "./src/hooks/onRequest.js";
@@ -8,6 +9,14 @@ import { env, isDevelopment } from "./src/config/env.js";
 import cors from "@fastify/cors";
 import fastifyCookie from "@fastify/cookie";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
+import staticPlugin from "./src/plugins/static.js";
+// import fastifyStatic from "@fastify/static";
+// import path from "path";
+// import { fileURLToPath } from "url";
+
+// Get __dirname in ESM
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const app = Fastify({
   logger: isDevelopment,
@@ -18,12 +27,18 @@ app.register(cors, {
   origin: "http://localhost:5173",
   credentials: true,
 });
+app.register(staticPlugin);
 // Then register other plugins
 app.register(fastifyCookie);
 app.register(jwtPlugin);
 app.register(dbPlugin);
+// app.register(fastifyStatic, {
+//   root: path.join(__dirname, "../../uploads"),
+//   prefix: "/uploads/",
+// });
 app.register(userRoute);
 app.register(patientRoute);
+app.register(medicalRecordRoute);
 app.addHook("onRequest", logRequest);
 
 app.get("/", function (request, reply) {

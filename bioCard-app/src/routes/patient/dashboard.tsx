@@ -7,12 +7,12 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import type { userType } from "@/types/user";
-import { FileText } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { LogOut } from "lucide-react";
 
 import { PersonalInfoCard } from "@/components/PersonalInfoCard";
 import AppointmentsCard from "@/components/AppointmentsCard";
+import MedicalRecordsCard from "@/components/MedicalRecordsCard";
 
 export type searchProp = {
   redirect?: string;
@@ -98,22 +98,13 @@ function RouteComponent() {
         {auth.user && <TopBar user={auth.user} onLogout={handleLogout} />}
 
         <div className="max-w-6xl mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Personal Info Card */}
-          <PersonalInfoCard userId={auth.user?.uuid ?? ""} />
-          {/* Medical Records Card */}
-          <div className="bg-card rounded-lg shadow p-6 flex flex-col gap-4 col-span-1 md:col-span-2">
-            <h2 className="font-bold text-lg mb-2 flex items-center gap-2">
-              <FileText className="text-primary" size={20} />
-              My Medical Records
-            </h2>
-            <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
-              <FileText size={32} />
-              <span>No medical records available.</span>
-            </div>
+          <div className="flex flex-col gap-8 md:col-span-1">
+            <PersonalInfoCard userId={auth.user?.uuid ?? ""} />
+            <AppointmentsCard userId={auth.user?.uuid ?? ""} />
           </div>
-
-          {/* Appointments Card */}
-          <AppointmentsCard userId={auth.user?.uuid ?? ""} />
+          <div className="md:col-span-2">
+            <MedicalRecordsCard userId={auth.user?.uuid ?? ""} />
+          </div>
         </div>
       </div>
     </>

@@ -46,7 +46,7 @@ export default function AppointmentsCard({ userId }: { userId: string }) {
   const [expanded, setExpanded] = useState(false);
 
   // Only show first 2 appointments unless expanded
-  const visibleAppointments = expanded ? data : data?.slice(0, 2);
+  const visibleAppointments = expanded ? data : data?.slice(0, 1);
 
   if (isLoading)
     return (
