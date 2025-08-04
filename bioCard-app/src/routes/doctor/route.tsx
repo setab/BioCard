@@ -1,6 +1,5 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 import { fetchSessionUser } from "@/hooks/authApi";
-import AppDrawer from "@/components/AppDrawer";
 
 export const Route = createFileRoute("/doctor")({
   beforeLoad: async ({ location }) => {
@@ -22,7 +21,6 @@ function RouteComponent() {
   return (
     <>
       {/* <div>Hello "/doctor"!</div> */}
-      <AppDrawer navLinks={[]} />
       <Outlet />
     </>
   );

@@ -2,6 +2,8 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
   getPatientAppointments,
   getPatientAppointmentsById,
+  getPatientCountForDoctorWithId,
+  getPatientInfoWithDoctorId,
 } from "../controllers/appointments.js";
 import { getPatientAppointmentsByIdSchema } from "../schemas/appointmentScham.js";
 
@@ -22,6 +24,21 @@ async function patientRoute(
       schema: getPatientAppointmentsByIdSchema,
     },
     getPatientAppointmentsById
+  );
+  fastify.get<{ Params: { id: string } }>(
+    "/api/getPatientCountForDoctorWithId/:id",
+    {
+      preHandler: fastify.authenticate,
+    },
+    getPatientCountForDoctorWithId
+  );
+
+  fastify.get<{ Params: { id: string } }>(
+    "/api/getPatientInfoWithDoctorId/:id",
+    {
+      preHandler: fastify.authenticate,
+    },
+    getPatientInfoWithDoctorId
   );
 }
 

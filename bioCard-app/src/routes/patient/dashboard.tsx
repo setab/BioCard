@@ -6,10 +6,7 @@ import {
 // import { User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import type { userType } from "@/types/user";
-import { Button } from "../../components/ui/button";
-import { LogOut } from "lucide-react";
-
+import TopBar from "@/components/TopBar";
 import { PersonalInfoCard } from "@/components/PersonalInfoCard";
 import AppointmentsCard from "@/components/AppointmentsCard";
 import MedicalRecordsCard from "@/components/MedicalRecordsCard";
@@ -18,36 +15,6 @@ export type searchProp = {
   redirect?: string;
   unauthorized?: string;
 };
-
-type TopBarProps = {
-  user: userType;
-  onLogout: () => void;
-};
-
-function TopBar({ user, onLogout }: TopBarProps) {
-  return (
-    <div className="bg-gray-700 text-primary-foreground flex justify-between items-center px-8 py-4 shadow">
-      <div className="flex items-center gap-2">
-        <span className="font-bold text-xl">MediCard</span>
-        <span className="ml-6 text-base">My Records</span>
-      </div>
-      <div className="flex items-center gap-4">
-        <span>
-          Welcome, {user?.name} ({user?.role})
-        </span>
-        <Button
-          onClick={onLogout}
-          className="flex items-center gap-2 rounded-full bg-white text-black border border-gray-300 shadow-sm transition-colors duration-200
-            hover:bg-primary hover:text-white hover:border-primary"
-        >
-          <LogOut size={18} />
-          Logout
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 export const Route = createFileRoute("/patient/dashboard")({
   component: RouteComponent,
 });
