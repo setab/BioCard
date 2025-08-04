@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 
 type NoteInput = {
   note: string;
@@ -14,6 +15,30 @@ type NoteInput = {
 export default function QuickNote() {
   const [expanded, setExpanded] = useState<boolean>(false);
   const { register, handleSubmit, reset } = useForm<NoteInput>();
+
+  const QuickNoteMutation = useMutation({
+    mutationFn: async (data: NoteInput) => {
+      const formData = new FormData();
+      formData.append("note", data.note);
+      formData.append("status", data.status);
+      if (data.images && data.images.length > 0) {
+        Array.from(data.images).forEach((file) => {
+          formData.append("images", file);
+        });
+      }
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/submitQuickNote`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
+      if (!res.ok) throw new Error("Failed to create note");
+      return await res.json();
+    },
+    onSuccess: () => reset(),
+  });
 
   const QuickNoteSubmit = (data: NoteInput) => {
     console.log(data);
