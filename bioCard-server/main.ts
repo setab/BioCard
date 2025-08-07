@@ -10,13 +10,8 @@ import cors from "@fastify/cors";
 import fastifyCookie from "@fastify/cookie";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import staticPlugin from "./src/plugins/static.js";
-// import fastifyStatic from "@fastify/static";
-// import path from "path";
-// import { fileURLToPath } from "url";
-
-// Get __dirname in ESM
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+import quickNoteRoute from "./src/routes/quickNoteRoute.js";
+import multiPlugin from "./src/plugins/multi.js";
 
 const app = Fastify({
   logger: isDevelopment,
@@ -32,6 +27,8 @@ app.register(staticPlugin);
 app.register(fastifyCookie);
 app.register(jwtPlugin);
 app.register(dbPlugin);
+app.register(multiPlugin);
+
 // app.register(fastifyStatic, {
 //   root: path.join(__dirname, "../../uploads"),
 //   prefix: "/uploads/",
@@ -39,6 +36,7 @@ app.register(dbPlugin);
 app.register(userRoute);
 app.register(patientRoute);
 app.register(medicalRecordRoute);
+app.register(quickNoteRoute);
 app.addHook("onRequest", logRequest);
 
 app.get("/", function (request, reply) {
