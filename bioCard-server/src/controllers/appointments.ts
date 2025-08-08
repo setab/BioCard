@@ -76,7 +76,7 @@ export async function getPatientInfoWithDoctorId(
       du.name AS doctor_name,
       du.id AS doctor_user_id,
       pu.name AS patient_name,
-      pu.id AS patient_user_id
+      p.id AS patient_user_id
       FROM appointments a
       JOIN doctors d ON a.doctor_id = d.id
       JOIN users du ON d.user_id = du.id

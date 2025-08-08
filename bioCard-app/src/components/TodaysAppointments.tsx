@@ -9,6 +9,17 @@ import Dialog from "@mui/material/Dialog";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
+export type AppointmentProp = {
+  appointment_id: string;
+  appointment_time: string; // ISO date string
+  reason: string;
+  status: string;
+  doctor_name: string;
+  doctor_user_id: string;
+  patient_name: string;
+  patient_user_id: string;
+};
+
 export default function TodaysAppointments({ userId }: { userId: string }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -122,7 +133,7 @@ export default function TodaysAppointments({ userId }: { userId: string }) {
           )}
           {appointmentsQuery.data && appointmentsQuery.data.length > 0 && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {appointmentsQuery.data.map((appt: any) => (
+              {appointmentsQuery.data.map((appt: AppointmentProp) => (
                 <Box
                   key={appt.appointment_id}
                   sx={{

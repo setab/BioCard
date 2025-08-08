@@ -4,17 +4,31 @@ import { Plus } from "lucide-react";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import type { AppointmentProp } from "./TodaysAppointments";
 
 type NoteInput = {
   note: string;
   status: "Healthy" | "Follow-up needed" | "Critical" | "Not sure";
   images: FileList;
+  patient_id: string;
 };
 
 export default function QuickNote({ userId }: { userId: string }) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const { register, handleSubmit, reset } = useForm<NoteInput>();
+
+  const appointmentsQuery = useQuery({
+    queryKey: ["appointments", userId],
+    queryFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/getPatientInfoWithDoctorId/${userId}`,
+        { credentials: "include" }
+      );
+      return res.json();
+    },
+    enabled: !!userId,
+  });
 
   const QuickNoteMutation = useMutation({
     mutationFn: async (data: NoteInput) => {
@@ -22,6 +36,7 @@ export default function QuickNote({ userId }: { userId: string }) {
       formData.append("note", data.note);
       formData.append("status", data.status);
       formData.append("userId", userId);
+      formData.append("patient_id", data.patient_id);
       if (data.images && data.images.length > 0) {
         Array.from(data.images).forEach((file) => {
           formData.append("images", file);
@@ -87,7 +102,26 @@ export default function QuickNote({ userId }: { userId: string }) {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
               />
             </div>
-
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Patient
+              </label>
+              <select
+                {...register("patient_id", { required: "Patient is required" })}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">Select Patient</option>
+                {Array.isArray(appointmentsQuery.data) &&
+                  appointmentsQuery.data.map((appt: AppointmentProp) => (
+                    <option
+                      key={appt.patient_user_id}
+                      value={appt.patient_user_id}
+                    >
+                      {appt.patient_name}
+                    </option>
+                  ))}
+              </select>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Status

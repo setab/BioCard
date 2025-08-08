@@ -10,6 +10,7 @@ export async function addQuickNote(req: FastifyRequest, res: FastifyReply) {
     let status = "";
     let filePath = "";
     let userId = "";
+    let patient_id = "";
 
     for await (const part of req.parts()) {
       if (part.file) {
@@ -26,6 +27,7 @@ export async function addQuickNote(req: FastifyRequest, res: FastifyReply) {
         if (part.fieldname === "note") note = part.value as string;
         if (part.fieldname === "status") status = part.value as string;
         if (part.fieldname === "userId") userId = part.value as string;
+        if (part.fieldname === "patient_id") patient_id = part.value as string;
       }
     }
 
@@ -39,13 +41,13 @@ export async function addQuickNote(req: FastifyRequest, res: FastifyReply) {
     //   return res.status(400).send({ error: "No file uploaded" });
     // }
     console.log(
-      `note: ${note}, status: ${status}, userId: ${userId}, files: ${files.length}`
+      `note: ${note}, status: ${status}, userId: ${userId}, files: ${files.length}, patient_id: ${patient_id}`
     );
     const result = await req.server.sql`
         insert into doctor_notes(
-          user_id, note, status, images, created_by, updated_by
+          user_id, note, status, images, patient_id, created_by, updated_by
         ) values(
-          ${userId}, ${note}, ${status}::health_status, ${files}, ${userId}, ${userId}
+          ${userId}, ${note}, ${status}::health_status, ${files},${patient_id}, ${userId}, ${userId}
         ) RETURNING *
     `;
 
