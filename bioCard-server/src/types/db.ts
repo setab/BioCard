@@ -51,3 +51,15 @@ export interface UserProfile extends User {
   department?: string | null;
   license_number?: string | null;
 }
+
+export interface DoctorNote {
+  id: string;
+  user_id: string;
+  note: string;
+  status: "Healthy" | "Follow-up needed" | "Critical" | "Not sure";
+  images: string[];
+  created_by: string;
+  created_at: string;
+  updated_by: string;
+  updated_at: string;
+}

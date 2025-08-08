@@ -12,7 +12,7 @@ type NoteInput = {
   images: FileList;
 };
 
-export default function QuickNote() {
+export default function QuickNote({ userId }: { userId: string }) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const { register, handleSubmit, reset } = useForm<NoteInput>();
 
@@ -21,13 +21,14 @@ export default function QuickNote() {
       const formData = new FormData();
       formData.append("note", data.note);
       formData.append("status", data.status);
+      formData.append("userId", userId);
       if (data.images && data.images.length > 0) {
         Array.from(data.images).forEach((file) => {
           formData.append("images", file);
         });
       }
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/submitQuickNote`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/doctorNotes`,
         {
           method: "POST",
           credentials: "include",
@@ -37,13 +38,16 @@ export default function QuickNote() {
       if (!res.ok) throw new Error("Failed to create note");
       return await res.json();
     },
-    onSuccess: () => reset(),
+    onSuccess: () => {
+      reset();
+      setExpanded(false);
+    },
   });
 
   const QuickNoteSubmit = (data: NoteInput) => {
     console.log(data);
     console.log("submited");
-    reset();
+    QuickNoteMutation.mutate(data);
   };
 
   return (
@@ -61,31 +65,83 @@ export default function QuickNote() {
           className="group hover:shadow-xl hover:scale-[1.03] hover:bg-emerald-700 transition-all duration-200"
         />
       </Box>
-      <Dialog open={expanded} onClose={() => setExpanded(false)}>
-        {/* <div>this is test quick note dialog</div> */}
-        <form onSubmit={handleSubmit(QuickNoteSubmit)} className="space-y-2">
-          <textarea
-            {...register("note", { required: true })}
-            placeholder="Write quick note..."
-            className="w-full p-2 border rounded"
-          />
-          <select
-            {...register("status", { required: true })}
-            className="w-full p-2 border rounded"
-          >
-            <option value="Healthy">Healthy</option>
-            <option value="Follow-up needed">Follow-up needed</option>
-            <option value="Critical">Critical</option>
-            <option value="Not sure">Not sure</option>
-          </select>
-          <input
-            type="file"
-            accept="image/*"
-            {...register("images")}
-            multiple
-          />
-          <button type="submit">Save Note</button>
-        </form>
+      <Dialog
+        open={expanded}
+        onClose={() => setExpanded(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <div className="p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Add Quick Note
+          </h2>
+          <form onSubmit={handleSubmit(QuickNoteSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Note
+              </label>
+              <textarea
+                {...register("note", { required: "Note is required" })}
+                placeholder="Write quick note..."
+                rows={4}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                {...register("status", { required: "Status is required" })}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">Select status...</option>
+                <option value="Healthy">Healthy</option>
+                <option value="Follow-up needed">Follow-up needed</option>
+                <option value="Critical">Critical</option>
+                <option value="Not sure">Not sure</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Images (Optional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("images")}
+                multiple
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setExpanded(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={QuickNoteMutation.isPending}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+              >
+                {QuickNoteMutation.isPending ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Note</span>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </Dialog>
     </>
   );

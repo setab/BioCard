@@ -83,7 +83,7 @@ function RouteComponent() {
             subtitle="Add medical notes quickly"
             color="bg-emerald-600"
           /> */}
-          <QuickNote />
+          <QuickNote userId={auth.user?.uuid ?? ""} />
         </div>
 
         {/* Stats Cards */}

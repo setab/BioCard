@@ -55,6 +55,7 @@ declare module "fastify" {
       [key: string]:
         | { value: string }
         | { file: Readable; filename: string; mimetype: string };
+      userId: { value: string };
     };
   }
 }
