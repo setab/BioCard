@@ -61,12 +61,20 @@ export async function addQuickNote(req: FastifyRequest, res: FastifyReply) {
   }
 }
 
-export async function getDoctorNotes(req: FastifyRequest, res: FastifyReply) {
+export async function getDoctorNotesByDoctorUserId(
+  req: FastifyRequest<{ Params: { id: string } }>,
+  res: FastifyReply
+) {
+  const { id } = req.params;
   try {
     const result = await req.server.sql`
-    select * from doctor_notes
-`;
-    res.status(200).send(result[0]);
+    select 
+    du.id, du.note, du.status, du.images
+    from doctor_notes du
+    join users u on du.user_id = u.id
+    where du.user_id = ${id}::uuid
+    `;
+    res.status(200).send(result);
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal Server Error" });

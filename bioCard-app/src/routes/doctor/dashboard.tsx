@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search, Calendar, Users } from "lucide-react";
 import TopBar from "@/components/TopBar";
 import TodaysAppointments from "@/components/TodaysAppointments";
@@ -13,6 +13,7 @@ export const Route = createFileRoute("/doctor/dashboard")({
 
 function RouteComponent() {
   const auth = useAuth();
+  const navigate = useNavigate();
 
   // Dummy data for demonstration
   const stats = [
@@ -44,9 +45,14 @@ function RouteComponent() {
     { name: "Sarah Williams", lastVisit: "1/8/2024", bloodType: "B+" },
   ];
 
+  const handleLogout = () => {
+    auth.logout();
+    navigate({ to: "/login" });
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen">
-      {auth.user && <TopBar user={auth.user} onLogout={() => {}} />}
+      {auth.user && <TopBar user={auth.user} onLogout={handleLogout} />}
       <div className="max-w-6xl mx-auto py-10 px-4">
         {/* Welcome Section */}
         <h1 className="text-3xl font-bold mb-1 text-black">Doctor Dashboard</h1>

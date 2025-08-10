@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
   addQuickNote,
-  getDoctorNotes,
+  getDoctorNotesByDoctorUserId,
 } from "../controllers/quickNoteController.js";
 
 export default async function quickNoteRoute(
@@ -15,5 +15,9 @@ export default async function quickNoteRoute(
     },
     addQuickNote
   );
-  fastify.get("/api/getDoctorNotes", getDoctorNotes);
+
+  fastify.get<{ Params: { id: string } }>(
+    "/api/getDoctorNotesByDoctorUserId/:id",
+    getDoctorNotesByDoctorUserId
+  );
 }
