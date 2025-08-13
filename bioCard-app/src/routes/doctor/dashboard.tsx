@@ -1,11 +1,10 @@
 import { useAuth } from "@/hooks/useAuth";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Search, Calendar, Users } from "lucide-react";
 import TopBar from "@/components/TopBar";
 import TodaysAppointments from "@/components/TodaysAppointments";
 import QuickNote from "@/components/QuickNote";
-import ActionCard from "@/components/ActionCard";
 import RecentNotes from "@/components/RecentNotes";
+import NFClookUp from "@/components/NFClookUp";
 
 export const Route = createFileRoute("/doctor/dashboard")({
   component: RouteComponent,
@@ -14,30 +13,6 @@ export const Route = createFileRoute("/doctor/dashboard")({
 function RouteComponent() {
   const auth = useAuth();
   const navigate = useNavigate();
-
-  // Dummy data for demonstration
-  const stats = [
-    {
-      icon: <Calendar className="text-blue-600" />,
-      title: "Today's Appointments",
-      value: 5,
-    },
-    {
-      icon: <Users className="text-green-600" />,
-      title: "Total Patients",
-      value: 3,
-    },
-    // {
-    //   icon: <FileText className="text-emerald-600" />,
-    //   title: "Pending Reviews",
-    //   value: 3,
-    // },
-    // {
-    //   icon: <Clock className="text-purple-600" />,
-    //   title: "Avg. Visit Time",
-    //   value: "25m",
-    // },
-  ];
 
   const recentPatients = [
     { name: "Emily Rodriguez", lastVisit: "1/15/2024", bloodType: "A+" },
@@ -62,13 +37,7 @@ function RouteComponent() {
 
         {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <ActionCard
-            icon={<Search size={32} />}
-            title="NFC Patient Lookup"
-            subtitle="Scan or search for patients"
-            color="bg-blue-600"
-            className=""
-          />
+          <NFClookUp />
           <QuickNote userId={auth.user?.uuid ?? ""} />
         </div>
 
@@ -105,7 +74,7 @@ function RouteComponent() {
             </ul>
           </div>
           {/* Recent Notes */}
-          <RecentNotes />
+          <RecentNotes userId={auth.user?.uuid ?? ""} />
         </div>
       </div>
     </div>

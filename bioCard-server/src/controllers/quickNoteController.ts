@@ -68,11 +68,19 @@ export async function getDoctorNotesByDoctorUserId(
   const { id } = req.params;
   try {
     const result = await req.server.sql`
-    select 
-    du.id, du.note, du.status, du.images
-    from doctor_notes du
-    join users u on du.user_id = u.id
-    where du.user_id = ${id}::uuid
+      SELECT 
+        du.id,
+        du.note,
+        du.status,
+        du.images,
+        du.patient_id,
+        du.created_at,
+        patient.name AS patient_name
+      FROM doctor_notes du
+      JOIN users doctor  ON du.user_id = doctor.id
+      JOIN patients p ON du.patient_id = p.id
+      JOIN users patient ON p.user_id = patient.id
+      WHERE du.user_id = ${id};
     `;
     res.status(200).send(result);
   } catch (err) {

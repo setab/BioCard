@@ -4,7 +4,12 @@ import { Plus } from "lucide-react";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { AppointmentProp } from "./TodaysAppointments";
 
 type NoteInput = {
@@ -17,6 +22,7 @@ type NoteInput = {
 export default function QuickNote({ userId }: { userId: string }) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const { register, handleSubmit, reset } = useForm<NoteInput>();
+  const queryClient = useQueryClient();
 
   const appointmentsQuery = useQuery({
     queryKey: ["appointments", userId],
@@ -56,6 +62,7 @@ export default function QuickNote({ userId }: { userId: string }) {
     onSuccess: () => {
       reset();
       setExpanded(false);
+      queryClient.invalidateQueries({ queryKey: ["recentNotes", userId] });
     },
   });
 
