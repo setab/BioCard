@@ -8,17 +8,14 @@ export const Route = createFileRoute("/patient/$id")({
     console.log("Patient id route");
     const user = await fetchSessionUser();
 
-    // Allow admin or doctor to view any patient
     if (user && allowedRoles.includes(user.role)) {
       return;
     }
 
-    // Allow patient to view only their own details
     if (user && user.role === "patient" && user.uuid === params.id) {
       return;
     }
 
-    // Otherwise, redirect
     console.log(
       JSON.stringify(
         `patient/$id : user: ${JSON.stringify(user)}; params: ${JSON.stringify(params)}; location: ${JSON.stringify(location)}`
@@ -36,7 +33,6 @@ export const Route = createFileRoute("/patient/$id")({
 
 function RouteComponent() {
   const { id } = useParams({ from: Route.fullPath });
-  // const search = useSearch();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["patient", id],

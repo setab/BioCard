@@ -4,12 +4,7 @@ import { Plus } from "lucide-react";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AppointmentProp } from "./TodaysAppointments";
 
 type NoteInput = {
@@ -84,7 +79,7 @@ export default function QuickNote({ userId }: { userId: string }) {
           title="Quick Note"
           subtitle="Add medical notes quickly"
           color="bg-emerald-600"
-          className="group hover:shadow-xl hover:scale-[1.03] hover:bg-emerald-700 transition-all duration-200"
+          className="group cursor-pointer hover:shadow-xl hover:scale-[1.03] hover:bg-emerald-700 transition-all duration-200"
         />
       </Box>
       <Dialog
