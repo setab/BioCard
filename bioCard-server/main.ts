@@ -13,6 +13,7 @@ import staticPlugin from "./src/plugins/static.js";
 import quickNoteRoute from "./src/routes/quickNoteRoute.js";
 import multiPlugin from "./src/plugins/multi.js";
 import medicalHistoryRoute from "./src/routes/NFC_medicaHistory_route.js";
+import nfc_route from "./src/routes/nfc_route.js";
 
 const app = Fastify({
   logger: isDevelopment,
@@ -39,6 +40,7 @@ app.register(patientRoute);
 app.register(medicalRecordRoute);
 app.register(quickNoteRoute);
 app.register(medicalHistoryRoute);
+app.register(nfc_route);
 app.addHook("onRequest", logRequest);
 
 app.get("/", function (request, reply) {
@@ -64,22 +66,29 @@ app.get(
 
 // biocard nfc connection
 
-app.post(
-  "/biocard/scan",
-  async (
-    req: FastifyRequest<{ Body: { device_id: string; card_uid: string } }>,
-    reply: FastifyReply
-  ) => {
-    const { device_id, card_uid } = req.body || {};
-    if (!device_id || !card_uid) {
-      return reply
-        .code(400)
-        .send({ ok: false, message: "device_id and card_uid required" });
-    }
-    app.log.info({ device_id, card_uid }, "received NFC scan");
-    return { ok: true, received: { device_id, card_uid } };
-  }
-);
+// app.post(
+//   "/biocard/scan",
+//   async (
+//     req: FastifyRequest<{ Body: { device_id: string; card_uid: string } }>,
+//     reply: FastifyReply
+//   ) => {
+//     const { device_id, card_uid } = req.body || {};
+//     if (!device_id || !card_uid) {
+//       return reply
+//         .code(400)
+//         .send({ ok: false, message: "device_id and card_uid required" });
+//     }
+//     // Lookup patient by card_uid
+//     const patient = await req.server.sql`
+//       select * from patients where nfc_uid = ${card_uid}
+//     `;
+//     if (!patient) {
+//       return reply.code(404).send({ ok: false, message: "Patient not found" });
+//     }
+//     app.log.info({ device_id, card_uid, patient }, "received NFC scan");
+//     return { ok: true, patient };
+//   }
+// );
 
 const start = async () => {
   try {
