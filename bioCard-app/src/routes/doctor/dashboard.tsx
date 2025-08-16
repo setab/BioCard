@@ -29,29 +29,21 @@ function RouteComponent() {
     <div className="bg-gray-50 min-h-screen">
       {auth.user && <TopBar user={auth.user} onLogout={handleLogout} />}
       <div className="max-w-6xl mx-auto py-10 px-4">
-        {/* Welcome Section */}
         <h1 className="text-3xl font-bold mb-1 text-black">Doctor Dashboard</h1>
         <p className="text-gray-700 mb-6">
           Welcome back, Dr. {auth.user?.name || "Doctor"}
         </p>
 
-        {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <NFClookUp />
           <QuickNote userId={auth.user?.uuid ?? ""} />
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          {/* {stats.map((stat, idx) => (
-            <StatCard key={idx} {...stat} />
-          ))} */}
           <TodaysAppointments userId={auth.user?.uuid ?? ""} />
         </div>
 
-        {/* Recent Patients & Notes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Recent Patients */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="font-semibold text-lg mb-4">Recent Patients</div>
             <ul>
@@ -73,7 +65,6 @@ function RouteComponent() {
               ))}
             </ul>
           </div>
-          {/* Recent Notes */}
           <RecentNotes userId={auth.user?.uuid ?? ""} />
         </div>
       </div>

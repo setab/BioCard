@@ -1,4 +1,4 @@
-import Fastify from "fastify";
+import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import userRoute from "./src/routes/user.js";
 import patientRoute from "./src/routes/appointment.js";
 import medicalRecordRoute from "./src/routes/medicalRecord.js";
@@ -45,6 +45,10 @@ app.get("/", function (request, reply) {
   reply.send({ hello: "world" });
 });
 
+app.get("/api/test", function (req, res) {
+  res.send({ message: "working" });
+});
+
 app.get(
   "/test",
   {
@@ -55,6 +59,25 @@ app.get(
       select * from users
     `;
     res.send({ message: "this is test file ", result });
+  }
+);
+
+// biocard nfc connection
+
+app.post(
+  "/biocard/scan",
+  async (
+    req: FastifyRequest<{ Body: { device_id: string; card_uid: string } }>,
+    reply: FastifyReply
+  ) => {
+    const { device_id, card_uid } = req.body || {};
+    if (!device_id || !card_uid) {
+      return reply
+        .code(400)
+        .send({ ok: false, message: "device_id and card_uid required" });
+    }
+    app.log.info({ device_id, card_uid }, "received NFC scan");
+    return { ok: true, received: { device_id, card_uid } };
   }
 );
 

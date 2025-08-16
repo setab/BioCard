@@ -58,3 +58,36 @@ export async function getMedicalHistoryById(
     res.status(500).send({ error: "Internal Server Error" });
   }
 }
+
+export async function patientInfoByNFCUID(
+  req: FastifyRequest<{ Params: { nfcUID: string } }>,
+  res: FastifyReply
+) {
+  try {
+    const { nfcUID } = req.params;
+    const patientInfo = await req.server.sql`
+    SELECT
+        p.id,
+        p.blood_type,
+        p.allergies,
+        p.last_visit,
+        u.name,
+        u.email,
+        u.gender,
+        u.phone,
+        ec.name AS emergency_contact_name,
+        ec.relation AS emergency_contact_relation,
+        ec.phone AS emergency_contact_phone
+    FROM patients p
+    JOIN users u ON p.user_id = u.id
+    LEFT JOIN emergency_contact ec ON ec.patient_id = p.id
+    WHERE p.nfc_uid = ${nfcUID};
+    `;
+    if (patientInfo.length < 0)
+      res.send({ error: "No patient available with this nfc uid" }).status(401);
+    res.send(patientInfo[0]).status(200);
+  } catch (err) {
+    req.server.log.error(err);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+}

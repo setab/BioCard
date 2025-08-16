@@ -20,6 +20,7 @@ import { Route as PatientDashboardRouteImport } from './routes/patient/dashboard
 import { Route as PatientIdRouteImport } from './routes/patient/$id'
 import { Route as DoctorDashboardRouteImport } from './routes/doctor/dashboard'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as DoctorPatientInfoNfcUIDRouteImport } from './routes/doctor/patientInfo/$nfcUID'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -76,6 +77,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DoctorPatientInfoNfcUIDRoute = DoctorPatientInfoNfcUIDRouteImport.update({
+  id: '/patientInfo/$nfcUID',
+  path: '/patientInfo/$nfcUID',
+  getParentRoute: () => DoctorRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/doctor/': typeof DoctorIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/doctor/patientInfo/$nfcUID': typeof DoctorPatientInfoNfcUIDRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/doctor': typeof DoctorIndexRoute
   '/patient': typeof PatientIndexRoute
+  '/doctor/patientInfo/$nfcUID': typeof DoctorPatientInfoNfcUIDRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/doctor/': typeof DoctorIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/doctor/patientInfo/$nfcUID': typeof DoctorPatientInfoNfcUIDRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/doctor/'
     | '/patient/'
+    | '/doctor/patientInfo/$nfcUID'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/doctor'
     | '/patient'
+    | '/doctor/patientInfo/$nfcUID'
   id:
     | '__root__'
     | '/'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/doctor/'
     | '/patient/'
+    | '/doctor/patientInfo/$nfcUID'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -243,17 +255,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/doctor/patientInfo/$nfcUID': {
+      id: '/doctor/patientInfo/$nfcUID'
+      path: '/patientInfo/$nfcUID'
+      fullPath: '/doctor/patientInfo/$nfcUID'
+      preLoaderRoute: typeof DoctorPatientInfoNfcUIDRouteImport
+      parentRoute: typeof DoctorRouteRoute
+    }
   }
 }
 
 interface DoctorRouteRouteChildren {
   DoctorDashboardRoute: typeof DoctorDashboardRoute
   DoctorIndexRoute: typeof DoctorIndexRoute
+  DoctorPatientInfoNfcUIDRoute: typeof DoctorPatientInfoNfcUIDRoute
 }
 
 const DoctorRouteRouteChildren: DoctorRouteRouteChildren = {
   DoctorDashboardRoute: DoctorDashboardRoute,
   DoctorIndexRoute: DoctorIndexRoute,
+  DoctorPatientInfoNfcUIDRoute: DoctorPatientInfoNfcUIDRoute,
 }
 
 const DoctorRouteRouteWithChildren = DoctorRouteRoute._addFileChildren(
