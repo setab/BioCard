@@ -91,3 +91,59 @@ export async function patientInfoByNFCUID(
     res.status(500).send({ error: "Internal Server Error" });
   }
 }
+
+export async function getMedicalRecordByNFCUID(
+  req: FastifyRequest<{ Params: { nfcUID: string } }>,
+  res: FastifyReply
+) {
+  try {
+    const { nfcUID } = req.params;
+    const medicalRecords = await req.server.sql`
+    SELECT
+      mr.id, mr.diagnosis, 
+      mr.created_at, mr.date, mr.notes, 
+      mr.prescriptions, mr.procedures, mr.follow_up, 
+      mr.images,
+      u.name
+    FROM medical_records mr
+    JOIN patients p on p.id = mr.patient_id
+    join doctors d on mr.doctor_id = d.id
+    join users u on u.id = d.user_id
+    WHERE p.nfc_uid = ${nfcUID}
+    `;
+    if (medicalRecords.length === 0) return res.status(200).send([]);
+    res.send(medicalRecords).status(200);
+  } catch (err) {
+    req.server.log.error(err);
+    res.status(500).send({ error: "Internal Server error" });
+  }
+}
+
+export async function getAppointmentDataByNFCUID(
+  req: FastifyRequest<{ Params: { nfcUID: string } }>,
+  res: FastifyReply
+) {
+  try {
+    const { nfcUID } = req.params;
+    const appointments = await req.server.sql`
+    
+    SELECT
+        ap.id,
+        ap.appointment_time,
+        ap.reason,
+        ap.status,
+        ap.notes,
+        du.name AS doctor_name
+    FROM appointments ap
+    JOIN patients p ON p.id = ap.patient_id
+    JOIN doctors d ON d.id = ap.doctor_id
+    JOIN users du ON du.id = d.user_id        -- doctor’s user record
+    JOIN users pu ON pu.id = p.user_id        -- patient’s user record
+    WHERE p.nfc_uid = '04D4C3B2A1';
+    `;
+    res.send(appointments).status(200);
+  } catch (err) {
+    req.server.log.error(err);
+    res.status(500).send({ error: "Internal Server Error " });
+  }
+}

@@ -12,7 +12,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import staticPlugin from "./src/plugins/static.js";
 import quickNoteRoute from "./src/routes/quickNoteRoute.js";
 import multiPlugin from "./src/plugins/multi.js";
-import medicalHistoryRoute from "./src/routes/medicaHistory.js";
+import medicalHistoryRoute from "./src/routes/NFC_medicaHistory_route.js";
 
 const app = Fastify({
   logger: isDevelopment,

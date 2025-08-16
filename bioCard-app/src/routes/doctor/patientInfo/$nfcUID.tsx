@@ -1,6 +1,7 @@
 import { useParams, createFileRoute } from "@tanstack/react-router";
 import { Calendar, FileText } from "lucide-react";
 import PatientProfile from "@/components/patientProfile";
+import MedicalHistory from "@/components/MedicalHistory";
 
 export const Route = createFileRoute("/doctor/patientInfo/$nfcUID")({
   component: RouteComponent,
@@ -41,75 +42,9 @@ function RouteComponent() {
       <PatientProfile nfcUID={nfcUID} />
 
       {/* Medical History */}
-      {/* <div className="bg-white rounded-lg shadow hover:shadow-xl transition-all duration-200 p-6 group">
-        <div className="flex items-center gap-2 mb-2">
-          <FileText
-            size={22}
-            className="text-emerald-600 group-hover:scale-110 transition-transform"
-          />
-          <span className="text-lg font-semibold text-gray-800">
-            Medical History
-          </span>
-        </div>
-        {medical_history.length === 0 ? (
-          <div className="text-gray-400">No medical records found.</div>
-        ) : (
-          <ul className="space-y-3">
-            {medical_history.map((rec: any, i: number) => (
-              <li
-                key={i}
-                className="p-4 rounded hover:bg-emerald-50 border border-gray-100 transition"
-              >
-                <div className="font-semibold text-gray-800">
-                  {rec.diagnosis}
-                </div>
-                <div className="text-xs text-gray-500 mb-1">
-                  {rec.date && new Date(rec.date).toLocaleString()}
-                </div>
-                {rec.notes && (
-                  <div className="text-sm text-gray-600">
-                    Notes: {rec.notes}
-                  </div>
-                )}
-                {rec.prescriptions && (
-                  <div className="text-sm text-gray-600">
-                    Prescriptions: {rec.prescriptions}
-                  </div>
-                )}
-                {rec.procedures && (
-                  <div className="text-sm text-gray-600">
-                    Procedures: {rec.procedures}
-                  </div>
-                )}
-                {rec.follow_up && (
-                  <div className="text-sm text-gray-600">
-                    Follow-up: {new Date(rec.follow_up).toLocaleDateString()}
-                  </div>
-                )}
-                {rec.images && rec.images.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {rec.images.map((img: string, idx: number) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt="scan"
-                        className="w-16 h-16 object-cover rounded border hover:scale-105 transition"
-                      />
-                    ))}
-                  </div>
-                )}
-                {rec.doctor_name && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    Doctor: {rec.doctor_name}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div> */}
-
+      <MedicalHistory nfcUID={nfcUID} />
       {/* Doctor Notes */}
+
       {/* <div className="bg-white rounded-lg shadow hover:shadow-xl transition-all duration-200 p-6 group">
         <div className="flex items-center gap-2 mb-2">
           <FileText

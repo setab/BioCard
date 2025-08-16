@@ -27,15 +27,15 @@ export async function getMedicalRecordById(
   try {
     const { id } = req.params;
     const medicalRecords = await req.server.sql`
-  SELECT
-    m.*,
-    du.name AS doctor_name
-  FROM users u
-  JOIN patients p ON u.id = p.user_id
-  JOIN medical_records m ON m.patient_id = p.id
-  JOIN doctors d ON m.doctor_id = d.id
-  JOIN users du ON d.user_id = du.id
-  WHERE u.id = ${id}
+    SELECT
+      m.*,
+      du.name AS doctor_name
+    FROM users u
+    JOIN patients p ON u.id = p.user_id
+    JOIN medical_records m ON m.patient_id = p.id
+    JOIN doctors d ON m.doctor_id = d.id
+    JOIN users du ON d.user_id = du.id
+    WHERE u.id = ${id}
     `;
     if (medicalRecords.length === 0) return res.status(200).send([]);
     res.send(medicalRecords);

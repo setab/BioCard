@@ -1,8 +1,10 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
+  getAppointmentDataByNFCUID,
   getMedicalHistoryById,
+  getMedicalRecordByNFCUID,
   patientInfoByNFCUID,
-} from "../controllers/medical_history.js";
+} from "../controllers/NFC_medical_history.js";
 
 async function medicalHistoryRoute(
   fastify: FastifyInstance,
@@ -15,6 +17,14 @@ async function medicalHistoryRoute(
   fastify.get<{ Params: { nfcUID: string } }>(
     "/api/patientInfoByNFCUID/:nfcUID",
     patientInfoByNFCUID
+  );
+  fastify.get<{ Params: { nfcUID: string } }>(
+    "/api/getMedicalRecordByNFCUID/:nfcUID",
+    getMedicalRecordByNFCUID
+  );
+  fastify.get<{ Params: { nfcUID: string } }>(
+    "/api/getAppointmentDataByNFCUID/:nfcUID",
+    getAppointmentDataByNFCUID
   );
 }
 export default medicalHistoryRoute;

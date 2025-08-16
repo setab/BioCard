@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Mail, Phone, Plus, User } from "lucide-react";
+import { AlertCircle, Mail, Phone, User } from "lucide-react";
 import Box from "@mui/material/Box";
 import ActionCard from "./ActionCard";
 import { useState } from "react";
@@ -53,7 +53,7 @@ export default function PatientProfile({ nfcUID }: { nfcUID: string }) {
             </div>
           }
           title="Basic Information"
-          subtitle="Add medical notes quickly"
+          subtitle="Basic Patient Informations"
           color="bg-blue-600"
           className="group cursor-pointer hover:shadow-xl hover:scale-[1.03] hover:bg-blue-700 transition-all duration-200"
         />
