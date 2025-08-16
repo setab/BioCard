@@ -1,7 +1,7 @@
 import { useParams, createFileRoute } from "@tanstack/react-router";
-import { Calendar, FileText } from "lucide-react";
 import PatientProfile from "@/components/patientProfile";
 import MedicalHistory from "@/components/MedicalHistory";
+import AppointmentHistory from "@/components/AppointmentHistory";
 
 export const Route = createFileRoute("/doctor/patientInfo/$nfcUID")({
   component: RouteComponent,
@@ -40,11 +40,9 @@ function RouteComponent() {
     <div className="max-w-3xl mx-auto p-6 space-y-6">
       {/* Patient Profile */}
       <PatientProfile nfcUID={nfcUID} />
-
       {/* Medical History */}
       <MedicalHistory nfcUID={nfcUID} />
       {/* Doctor Notes */}
-
       {/* <div className="bg-white rounded-lg shadow hover:shadow-xl transition-all duration-200 p-6 group">
         <div className="flex items-center gap-2 mb-2">
           <FileText
@@ -89,45 +87,8 @@ function RouteComponent() {
           </ul>
         )}
       </div> */}
-
       {/* Appointments */}
-      {/* <div className="bg-white rounded-lg shadow hover:shadow-xl transition-all duration-200 p-6 group">
-        <div className="flex items-center gap-2 mb-2">
-          <Calendar
-            size={22}
-            className="text-orange-600 group-hover:scale-110 transition-transform"
-          />
-          <span className="text-lg font-semibold text-gray-800">
-            Appointments
-          </span>
-        </div>
-        {appointments.length === 0 ? (
-          <div className="text-gray-400">No appointments found.</div>
-        ) : (
-          <ul className="space-y-3">
-            {appointments.map((appt: any, i: number) => (
-              <li
-                key={i}
-                className="p-4 rounded hover:bg-orange-50 border border-gray-100 transition"
-              >
-                <div className="font-semibold text-gray-800">{appt.reason}</div>
-                <div className="text-xs text-gray-500 mb-1">
-                  {appt.appointment_time &&
-                    new Date(appt.appointment_time).toLocaleString()}
-                </div>
-                <div className="text-sm text-gray-600">
-                  Status: {appt.status}
-                </div>
-                {appt.notes && (
-                  <div className="text-sm text-gray-600">
-                    Notes: {appt.notes}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div> */}
+      <AppointmentHistory nfcUID={nfcUID} />{" "}
     </div>
   );
 }
