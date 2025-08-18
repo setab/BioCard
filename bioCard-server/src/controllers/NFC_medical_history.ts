@@ -139,7 +139,7 @@ export async function getAppointmentDataByNFCUID(
     JOIN doctors d ON d.id = ap.doctor_id
     JOIN users du ON du.id = d.user_id        -- doctor’s user record
     JOIN users pu ON pu.id = p.user_id        -- patient’s user record
-    WHERE p.nfc_uid = '04D4C3B2A1';
+    WHERE p.nfc_uid = ${nfcUID};
     `;
     res.send(appointments).status(200);
   } catch (err) {

@@ -1,3 +1,4 @@
+import { error } from "console";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export async function insertNfcInfo(
@@ -29,9 +30,21 @@ export async function insertNfcInfo(
 export async function getNfcInfo(req: FastifyRequest, res: FastifyReply) {
   try {
     const nfc_logs = await req.server.sql`
-    SELECT * FROM nfc_logs ORDER BY logged_at DESC LIMIT 1;
-    `;
-    res.send(nfc_logs);
+        SELECT * FROM nfc_logs ORDER BY logged_at DESC LIMIT 1;
+      `;
+    if (!nfc_logs || nfc_logs.length === 0) {
+      return res.status(401).send({ ok: false, message: "No NFC log found" });
+    }
+    const nfc_log = nfc_logs[0];
+    // Query patient by nfc_uid
+    const patients = await req.server.sql`
+        SELECT * FROM patients WHERE nfc_uid = ${nfc_log.nfc_uid} LIMIT 1;
+      `;
+    if (!patients || patients.length === 0) {
+      return res.status(401).send({ error: "No user for this NFC card" });
+    }
+    // const patient = patients[0] || null;
+    res.send(nfc_log);
   } catch (err) {
     req.server.log.error(err);
     res.status(500).send({ error: "Internal Server Error" });

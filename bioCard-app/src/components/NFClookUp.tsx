@@ -48,8 +48,11 @@ export default function NFClookUp() {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/biocard/scan`
       );
-      if (!res.ok) throw new Error("Fetch failed");
       const json = await res.json();
+      if (!res.ok) {
+        // Pass error from server to component
+        throw new Error(json.error || "Fetch failed");
+      }
       return pickLatest(json); // always return the newest entry (or null)
     },
     enabled: expanded,
@@ -86,7 +89,9 @@ export default function NFClookUp() {
 
           {error && (
             <Typography color="error" sx={{ mt: 1 }}>
-              Error loading scans
+              {error.message === "No user for this NFC card"
+                ? "No user for this NFC card"
+                : "Error loading scans"}
             </Typography>
           )}
 
